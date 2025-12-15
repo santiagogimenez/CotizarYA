@@ -97,18 +97,13 @@ async function copyToClipboard() {
     await navigator.clipboard.writeText(priceText);
     
     // Feedback visual
-    const originalText = elements.btnCopy.innerHTML;
+    const originalText = elements.btnCopy.textContent;
     elements.btnCopy.classList.add('success');
-    elements.btnCopy.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-      ¡Copiado!
-    `;
+    elements.btnCopy.textContent = '¡Copiado!';
 
     setTimeout(() => {
       elements.btnCopy.classList.remove('success');
-      elements.btnCopy.innerHTML = originalText;
+      elements.btnCopy.textContent = originalText;
     }, 2000);
 
   } catch (error) {
