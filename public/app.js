@@ -40,8 +40,24 @@ const elements = {
   statMax: document.getElementById('statMax'),
   statMin: document.getElementById('statMin'),
   statAvg: document.getElementById('statAvg'),
-  statChange: document.getElementById('statChange')
+  statChange: document.getElementById('statChange'),
+  blueCompra: document.getElementById('blueCompra'),
+  blueVenta: document.getElementById('blueVenta'),
+  usdtCompra: document.getElementById('usdtCompra'),
+  usdtVenta: document.getElementById('usdtVenta'),
+  comparisonAmount: document.getElementById('comparisonAmount'),
+  bestOption: document.getElementById('bestOption'),
+  bestPrice: document.getElementById('bestPrice'),
+  bestDetail: document.getElementById('bestDetail'),
+  alternativeOption: document.getElementById('alternativeOption'),
+  alternativePrice: document.getElementById('alternativePrice'),
+  alternativeDetail: document.getElementById('alternativeDetail'),
+  comparisonDifference: document.getElementById('comparisonDifference')
 };
+
+// Variables globales para cotizaciones
+let blueRates = { compra: 0, venta: 0 };
+let usdtRates = { compra: 0, venta: 0 };
 
 // Inicializar la aplicación
 async function init() {
@@ -50,6 +66,7 @@ async function init() {
   loadHistory();
   await fetchRate();
   await fetchPlatforms();
+  await fetchBlueRate();
   setupEventListeners();
   setupPeriodSelector();
   startAutoRefresh();
@@ -228,6 +245,7 @@ function setupEventListeners() {
   elements.usdtAmount.addEventListener('input', calculatePrice);
   elements.markup.addEventListener('input', calculatePrice);
   elements.rounding.addEventListener('change', calculatePrice);
+  elements.comparisonAmount.addEventListener('input', calculateComparison);
 
   // Calcular al presionar Enter
   elements.usdtAmount.addEventListener('keypress', (e) => {
@@ -248,6 +266,7 @@ function setupEventListeners() {
 function startAutoRefresh() {
   autoRefreshInterval = setInterval(() => {
     fetchRate(false);
+    fetchBlueRate();
   }, 30000);
 }
 
@@ -255,6 +274,97 @@ function startPlatformsAutoRefresh() {
   platformsAutoRefreshInterval = setInterval(() => {
     fetchPlatforms(false);
   }, 30000);
+}
+
+// Obtener cotización del dólar blue
+async function fetchBlueRate() {
+  try {
+    const response = await fetch('https://dolarapi.com/v1/dolares/blue');
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener cotización del dólar blue');
+    }
+    
+    const data = await response.json();
+    
+    blueRates = {
+      compra: data.compra,
+      venta: data.venta
+    };
+    
+    // Actualizar UI
+    elements.blueCompra.textContent = `$ ${formatNumber(blueRates.compra, 2)}`;
+    elements.blueVenta.textContent = `$ ${formatNumber(blueRates.venta, 2)}`;
+    
+    // Actualizar cotizaciones USDT para comparación
+    if (currentRate > 0) {
+      // Simular spread de P2P (aproximadamente 1-2%)
+      usdtRates = {
+        compra: currentRate * 0.99, // Compras USDT un poco más bajo
+        venta: currentRate * 1.01   // Vendes USDT un poco más alto
+      };
+      
+      elements.usdtCompra.textContent = `$ ${formatNumber(usdtRates.compra, 2)}`;
+      elements.usdtVenta.textContent = `$ ${formatNumber(usdtRates.venta, 2)}`;
+      
+      // Si hay un monto ingresado, recalcular comparación
+      if (elements.comparisonAmount.value) {
+        calculateComparison();
+      }
+    }
+  } catch (error) {
+    console.error('Error al obtener dólar blue:', error);
+    elements.blueCompra.textContent = 'Error';
+    elements.blueVenta.textContent = 'Error';
+  }
+}
+
+// Calcular comparación Dollar Blue vs USDT
+function calculateComparison() {
+  const amount = parseFloat(elements.comparisonAmount.value);
+  
+  if (!amount || amount <= 0) {
+    elements.bestOption.textContent = '--';
+    elements.bestPrice.textContent = '$ --';
+    elements.bestDetail.textContent = '--';
+    elements.alternativeOption.textContent = '--';
+    elements.alternativePrice.textContent = '$ --';
+    elements.alternativeDetail.textContent = '--';
+    elements.comparisonDifference.querySelector('.difference-value').textContent = '--';
+    return;
+  }
+  
+  // Calcular cuántos ARS necesitas para comprar X USD
+  const arsNeedBlue = amount * blueRates.compra;
+  const arsNeedUsdt = amount * usdtRates.compra;
+  
+  // Determinar cuál es mejor (menor costo)
+  const isBlueBetter = arsNeedBlue < arsNeedUsdt;
+  const difference = Math.abs(arsNeedBlue - arsNeedUsdt);
+  const percentDiff = ((difference / Math.max(arsNeedBlue, arsNeedUsdt)) * 100).toFixed(2);
+  
+  if (isBlueBetter) {
+    // Dólar Blue es mejor
+    elements.bestOption.textContent = '🏦 Dólar Blue';
+    elements.bestPrice.textContent = `$ ${formatNumber(arsNeedBlue, 2)}`;
+    elements.bestDetail.textContent = `Comprás ${amount} USD a $ ${formatNumber(blueRates.compra, 2)} c/u`;
+    
+    elements.alternativeOption.textContent = '₮ USDT P2P';
+    elements.alternativePrice.textContent = `$ ${formatNumber(arsNeedUsdt, 2)}`;
+    elements.alternativeDetail.textContent = `Comprás ${amount} USDT a $ ${formatNumber(usdtRates.compra, 2)} c/u`;
+  } else {
+    // USDT es mejor
+    elements.bestOption.textContent = '₮ USDT P2P';
+    elements.bestPrice.textContent = `$ ${formatNumber(arsNeedUsdt, 2)}`;
+    elements.bestDetail.textContent = `Comprás ${amount} USDT a $ ${formatNumber(usdtRates.compra, 2)} c/u`;
+    
+    elements.alternativeOption.textContent = '🏦 Dólar Blue';
+    elements.alternativePrice.textContent = `$ ${formatNumber(arsNeedBlue, 2)}`;
+    elements.alternativeDetail.textContent = `Comprás ${amount} USD a $ ${formatNumber(blueRates.compra, 2)} c/u`;
+  }
+  
+  elements.comparisonDifference.querySelector('.difference-value').textContent = 
+    `$ ${formatNumber(difference, 2)} (${percentDiff}%)`;
 }
 
 // Obtener cotizaciones de plataformas

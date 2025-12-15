@@ -229,6 +229,87 @@
         </div>
       </div>
 
+      <!-- Dollar Blue vs USDT -->
+      <div class="comparison-card">
+        <div class="comparison-header">
+          <h3>💵 Dólar Blue vs USDT</h3>
+          <p class="comparison-subtitle">Compará cuál te conviene más para comprar o vender</p>
+        </div>
+
+        <div class="comparison-rates">
+          <div class="rate-box blue-rate">
+            <div class="rate-box-header">
+              <span class="rate-icon">🏦</span>
+              <span class="rate-title">Dólar Blue</span>
+            </div>
+            <div class="rate-box-prices">
+              <div class="rate-price-item">
+                <span class="rate-label">Compra</span>
+                <span class="rate-value" id="blueCompra">--</span>
+              </div>
+              <div class="rate-price-item">
+                <span class="rate-label">Venta</span>
+                <span class="rate-value" id="blueVenta">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rate-box usdt-rate">
+            <div class="rate-box-header">
+              <span class="rate-icon">₮</span>
+              <span class="rate-title">USDT P2P</span>
+            </div>
+            <div class="rate-box-prices">
+              <div class="rate-price-item">
+                <span class="rate-label">Compra</span>
+                <span class="rate-value" id="usdtCompra">--</span>
+              </div>
+              <div class="rate-price-item">
+                <span class="rate-label">Venta</span>
+                <span class="rate-value" id="usdtVenta">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-calculator">
+          <div class="comparison-input-group">
+            <label for="comparisonAmount">Cantidad en USD</label>
+            <input 
+              type="number" 
+              id="comparisonAmount" 
+              placeholder="Ej: 100"
+              min="1"
+              step="1"
+            >
+          </div>
+
+          <div class="comparison-results">
+            <div class="comparison-result-card best">
+              <div class="result-badge">✓ Mejor Opción</div>
+              <div class="result-title" id="bestOption">--</div>
+              <div class="result-price" id="bestPrice">$ --</div>
+              <div class="result-detail" id="bestDetail">--</div>
+            </div>
+
+            <div class="comparison-result-card">
+              <div class="result-title" id="alternativeOption">--</div>
+              <div class="result-price alternative" id="alternativePrice">$ --</div>
+              <div class="result-detail" id="alternativeDetail">--</div>
+            </div>
+          </div>
+
+          <div class="comparison-difference" id="comparisonDifference">
+            <span class="difference-label">Diferencia:</span>
+            <span class="difference-value">--</span>
+          </div>
+        </div>
+
+        <div class="comparison-info">
+          <p>💡 <strong>Tip:</strong> Los precios del dólar blue pueden variar según la casa de cambio. Esta comparación usa promedios del mercado.</p>
+        </div>
+      </div>
+
       <!-- Calculadora de Comisiones -->
       <div class="commission-card" id="commissionCard" style="display: none;">
         <div class="commission-header">
