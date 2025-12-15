@@ -33,6 +33,7 @@ const elements = {
   alertPrice: document.getElementById('alertPrice'),
   alertType: document.getElementById('alertType'),
   btnAddAlert: document.getElementById('btnAddAlert'),
+  btnClearAlerts: document.getElementById('btnClearAlerts'),
   alertsList: document.getElementById('alertsList'),
   priceChart: document.getElementById('priceChart'),
   chartEmpty: document.getElementById('chartEmpty'),
@@ -222,6 +223,7 @@ function setupEventListeners() {
   elements.btnCopy.addEventListener('click', copyToClipboard);
   elements.themeToggle.addEventListener('click', toggleTheme);
   elements.btnAddAlert.addEventListener('click', addAlert);
+  elements.btnClearAlerts.addEventListener('click', clearTriggeredAlerts);
   
   elements.usdtAmount.addEventListener('input', calculatePrice);
   elements.markup.addEventListener('input', calculatePrice);
@@ -379,6 +381,15 @@ function addAlert() {
 
   elements.alertPrice.value = '';
   showStatusMessage('✅ Alerta creada correctamente', 'success');
+  
+  // Pedir permiso para notificaciones del navegador si aún no se pidió
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        showStatusMessage('🔔 Notificaciones del navegador activadas', 'success');
+      }
+    });
+  }
 }
 
 function deleteAlert(id) {
@@ -386,6 +397,33 @@ function deleteAlert(id) {
   saveAlerts();
   renderAlerts();
 }
+
+function reactivateAlert(id) {
+  const alert = alerts.find(a => a.id === id);
+  if (alert) {
+    alert.triggered = false;
+    saveAlerts();
+    renderAlerts();
+    showStatusMessage('🔄 Alerta reactivada', 'success');
+  }
+}
+
+function clearTriggeredAlerts() {
+  const triggeredCount = alerts.filter(a => a.triggered).length;
+  
+  if (triggeredCount === 0) {
+    showStatusMessage('No hay alertas activadas para limpiar', 'error');
+    return;
+  }
+  
+  alerts = alerts.filter(alert => !alert.triggered);
+  saveAlerts();
+  renderAlerts();
+  showStatusMessage(`🗑️ ${triggeredCount} alerta${triggeredCount > 1 ? 's' : ''} eliminada${triggeredCount > 1 ? 's' : ''}`, 'success');
+}
+
+window.reactivateAlert = reactivateAlert;
+window.clearTriggeredAlerts = clearTriggeredAlerts;
 
 function renderAlerts() {
   if (alerts.length === 0) {
@@ -413,6 +451,14 @@ function renderAlerts() {
           </div>
         </div>
         <div class="alert-actions">
+          ${alert.triggered ? `
+            <button class="btn-reactivate-alert" onclick="reactivateAlert(${alert.id})" title="Reactivar alerta">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6M23 20v-6h-6"></path>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+              </svg>
+            </button>
+          ` : ''}
           <button class="btn-delete-alert" onclick="deleteAlert(${alert.id})" title="Eliminar alerta">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -450,12 +496,17 @@ function checkAlerts(currentPrice) {
 function showNotification(alert, currentPrice) {
   const typeText = alert.type === 'above' ? 'subió' : 'bajó';
   
+  // Reproducir sonido de notificación
+  playNotificationSound();
+  
+  // Notificación visual en la app
   const notification = document.createElement('div');
   notification.className = 'alert-notification';
   notification.innerHTML = `
     <div class="alert-notification-header">
       <div class="alert-notification-icon">🔔</div>
       <div class="alert-notification-title">¡Alerta de Precio!</div>
+      <button class="alert-notification-close" onclick="this.closest('.alert-notification').remove()">×</button>
     </div>
     <div class="alert-notification-body">
       El USDT ${typeText} a <strong>$ ${formatNumber(currentPrice, 2)}</strong><br>
@@ -465,10 +516,61 @@ function showNotification(alert, currentPrice) {
 
   document.body.appendChild(notification);
 
+  // Auto-cerrar después de 10 segundos
   setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease';
-    setTimeout(() => notification.remove(), 300);
-  }, 5000);
+    if (notification.parentElement) {
+      notification.style.animation = 'slideOutRight 0.3s ease';
+      setTimeout(() => notification.remove(), 300);
+    }
+  }, 10000);
+  
+  // Intentar notificación del navegador
+  showBrowserNotification(alert, currentPrice, typeText);
+}
+
+function playNotificationSound() {
+  try {
+    // Crear un tono de notificación usando Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (error) {
+    console.log('No se pudo reproducir el sonido:', error);
+  }
+}
+
+function showBrowserNotification(alert, currentPrice, typeText) {
+  // Verificar si las notificaciones están soportadas
+  if (!('Notification' in window)) {
+    return;
+  }
+  
+  // Si ya hay permiso, mostrar notificación
+  if (Notification.permission === 'granted') {
+    new Notification('🔔 CotizarYA - Alerta de Precio', {
+      body: `El USDT ${typeText} a $ ${formatNumber(currentPrice, 2)}\nTu precio objetivo: $ ${formatNumber(alert.price, 2)}`,
+      icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💱</text></svg>',
+      badge: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔔</text></svg>',
+      tag: 'price-alert',
+      requireInteraction: false
+    });
+  } 
+  // Si nunca se pidió permiso, pedirlo para la próxima
+  else if (Notification.permission !== 'denied') {
+    Notification.requestPermission();
+  }
 }
 
 window.deleteAlert = deleteAlert;
