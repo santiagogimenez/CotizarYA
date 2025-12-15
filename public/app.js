@@ -3,6 +3,8 @@ let currentRate = null;
 let autoRefreshInterval = null;
 let platformsAutoRefreshInterval = null;
 let alerts = [];
+let priceHistory = [];
+let currentPeriod = '1h';
 
 // Elementos del DOM
 const elements = {
@@ -31,16 +33,24 @@ const elements = {
   alertPrice: document.getElementById('alertPrice'),
   alertType: document.getElementById('alertType'),
   btnAddAlert: document.getElementById('btnAddAlert'),
-  alertsList: document.getElementById('alertsList')
+  alertsList: document.getElementById('alertsList'),
+  priceChart: document.getElementById('priceChart'),
+  chartEmpty: document.getElementById('chartEmpty'),
+  statMax: document.getElementById('statMax'),
+  statMin: document.getElementById('statMin'),
+  statAvg: document.getElementById('statAvg'),
+  statChange: document.getElementById('statChange')
 };
 
 // Inicializar la aplicación
 async function init() {
   loadTheme();
   loadAlerts();
+  loadHistory();
   await fetchRate();
   await fetchPlatforms();
   setupEventListeners();
+  setupPeriodSelector();
   startAutoRefresh();
   startPlatformsAutoRefresh();
 }
@@ -86,6 +96,19 @@ async function fetchRate(showLoading = true) {
 
     // Verificar alertas
     checkAlerts(data.ask);
+
+    // Guardar en historial (solo si aún no hay suficientes datos de muestra)
+    if (priceHistory.length > 0) {
+      const lastTime = priceHistory[priceHistory.length - 1].timestamp;
+      const hoursSinceLast = (Date.now() - lastTime) / (1000 * 60 * 60);
+      
+      // Solo agregar datos reales si han pasado más de 30 segundos desde el último
+      if (hoursSinceLast >= 0.0083) { // 0.0083 horas = 30 segundos
+        addToHistory(data.ask);
+      }
+    } else {
+      addToHistory(data.ask);
+    }
 
     hideStatusMessage();
 
@@ -449,6 +472,304 @@ function showNotification(alert, currentPrice) {
 }
 
 window.deleteAlert = deleteAlert;
+
+// Sistema de Historial y Gráficos
+function loadHistory() {
+  const saved = localStorage.getItem('priceHistory');
+  priceHistory = saved ? JSON.parse(saved) : [];
+  
+  // Verificar si los datos son válidos (tienen suficiente rango temporal)
+  if (priceHistory.length > 0) {
+    const firstTime = priceHistory[0].timestamp;
+    const lastTime = priceHistory[priceHistory.length - 1].timestamp;
+    const hoursDiff = (lastTime - firstTime) / (1000 * 60 * 60);
+    
+    console.log(`📦 Cargando ${priceHistory.length} puntos existentes (${hoursDiff.toFixed(1)}h de rango)`);
+    
+    // Si el rango es menor a 2 horas, regenerar datos
+    if (hoursDiff < 2) {
+      console.log('⚠️ Datos insuficientes, regenerando...');
+      generateSampleData();
+    }
+  } else if (currentRate) {
+    // Si no hay datos y ya tenemos el precio actual, generar
+    console.log('📊 Generando datos iniciales...');
+    generateSampleData();
+  }
+  
+  renderChart();
+}
+
+function generateSampleData() {
+  // Limpiar datos anteriores
+  priceHistory = [];
+  
+  const now = Date.now();
+  const basePrice = currentRate || 1520;
+  let price = basePrice;
+  
+  // Generar 100 puntos distribuidos en las últimas 25 horas
+  const totalPoints = 100;
+  const hoursToGenerate = 25;
+  const timeSpanMs = hoursToGenerate * 60 * 60 * 1000; // 25 horas en milisegundos
+  const intervalMs = timeSpanMs / totalPoints; // Intervalo entre cada punto
+  
+  for (let i = 0; i < totalPoints; i++) {
+    // Timestamp: empieza hace 25 horas y avanza hacia ahora
+    const timestamp = now - timeSpanMs + (i * intervalMs);
+    
+    // Movimiento de precio aleatorio pero suave
+    const randomChange = (Math.random() - 0.5) * 3;
+    price += randomChange;
+    
+    // Mantener precio en rango razonable
+    price = Math.max(basePrice - 15, Math.min(basePrice + 15, price));
+    
+    priceHistory.push({ 
+      price: parseFloat(price.toFixed(2)), 
+      timestamp: Math.floor(timestamp)
+    });
+  }
+  
+  localStorage.setItem('priceHistory', JSON.stringify(priceHistory));
+  
+  // Verificar distribución
+  const firstDate = new Date(priceHistory[0].timestamp);
+  const lastDate = new Date(priceHistory[priceHistory.length - 1].timestamp);
+  const hoursDiff = (lastDate - firstDate) / (1000 * 60 * 60);
+  
+  console.log(`📊 ${priceHistory.length} puntos generados`);
+  console.log(`📅 Primer punto: ${firstDate.toLocaleString()}`);
+  console.log(`📅 Último punto: ${lastDate.toLocaleString()}`);
+  console.log(`⏰ Rango temporal: ${hoursDiff.toFixed(1)} horas`);
+}
+
+function addToHistory(price) {
+  const now = Date.now();
+  priceHistory.push({ price, timestamp: now });
+  
+  // Limpiar datos antiguos (más de 30 días)
+  const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+  priceHistory = priceHistory.filter(item => item.timestamp > thirtyDaysAgo);
+  
+  localStorage.setItem('priceHistory', JSON.stringify(priceHistory));
+  renderChart();
+}
+
+function setupPeriodSelector() {
+  const buttons = document.querySelectorAll('.period-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = btn.dataset.period;
+      console.log(`🔄 Cambiando a período: ${currentPeriod}`);
+      renderChart();
+    });
+  });
+}
+
+function getFilteredHistory() {
+  if (priceHistory.length === 0) return [];
+  
+  const now = Date.now();
+  const periods = {
+    '1h': 60 * 60 * 1000,
+    '6h': 6 * 60 * 60 * 1000,
+    '24h': 24 * 60 * 60 * 1000,
+    '7d': 7 * 24 * 60 * 60 * 1000,
+    '30d': 30 * 24 * 60 * 60 * 1000
+  };
+  
+  const periodMs = periods[currentPeriod];
+  const cutoffTime = now - periodMs;
+  
+  console.log(`⏰ Ahora: ${new Date(now).toLocaleString()}`);
+  console.log(`⏰ Cutoff (${currentPeriod}): ${new Date(cutoffTime).toLocaleString()}`);
+  console.log(`⏰ Primer dato: ${new Date(priceHistory[0].timestamp).toLocaleString()}`);
+  console.log(`⏰ Último dato: ${new Date(priceHistory[priceHistory.length - 1].timestamp).toLocaleString()}`);
+  
+  const filtered = priceHistory.filter(item => {
+    const isInRange = item.timestamp >= cutoffTime;
+    return isInRange;
+  });
+  
+  console.log(`📊 Total datos: ${priceHistory.length}, Período: ${currentPeriod}, Filtrados: ${filtered.length}`);
+  
+  // Si hay muchos datos, tomar una muestra para mejor rendimiento
+  if (filtered.length > 100) {
+    const step = Math.ceil(filtered.length / 100);
+    const sampled = filtered.filter((_, index) => index % step === 0);
+    console.log(`📉 Muestreados: ${sampled.length} de ${filtered.length}`);
+    return sampled;
+  }
+  
+  return filtered;
+}
+
+function renderChart() {
+  const filteredData = getFilteredHistory();
+  
+  if (filteredData.length < 2) {
+    elements.chartEmpty.style.display = 'flex';
+    elements.priceChart.style.display = 'none';
+    elements.statMax.textContent = '--';
+    elements.statMin.textContent = '--';
+    elements.statAvg.textContent = '--';
+    elements.statChange.textContent = '--';
+    
+    // Mostrar cantidad de puntos disponibles
+    const totalPoints = priceHistory.length;
+    if (totalPoints > 0) {
+      elements.chartEmpty.querySelector('p').textContent = `📈 ${totalPoints} punto${totalPoints > 1 ? 's' : ''} de datos`;
+      elements.chartEmpty.querySelector('span').textContent = `Se necesitan al menos 2 puntos para este período (${currentPeriod}). Seguí usando la app para recopilar más datos.`;
+    }
+    return;
+  }
+  
+  elements.chartEmpty.style.display = 'none';
+  elements.priceChart.style.display = 'block';
+  
+  // Calcular estadísticas
+  const prices = filteredData.map(d => d.price);
+  const max = Math.max(...prices);
+  const min = Math.min(...prices);
+  const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+  const first = prices[0];
+  const last = prices[prices.length - 1];
+  const change = ((last - first) / first) * 100;
+  
+  // Actualizar stats
+  elements.statMax.textContent = `$ ${formatNumber(max, 2)}`;
+  elements.statMin.textContent = `$ ${formatNumber(min, 2)}`;
+  elements.statAvg.textContent = `$ ${formatNumber(avg, 2)}`;
+  elements.statChange.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+  elements.statChange.style.color = change >= 0 ? 'var(--success)' : '#dc2626';
+  
+  // Dibujar gráfico
+  drawChart(filteredData, min, max);
+  
+  // Mostrar info de puntos
+  console.log(`Renderizando ${filteredData.length} puntos para período ${currentPeriod}`);
+}
+
+function drawChart(data, min, max) {
+  const svg = elements.priceChart;
+  const width = 800;
+  const height = 200;
+  const padding = 30;
+  
+  // Limpiar SVG
+  while (svg.childNodes.length > 1) {
+    svg.removeChild(svg.lastChild);
+  }
+  
+  if (data.length < 2) return;
+  
+  // Añadir margen a min y max para que el gráfico respire
+  const range = max - min;
+  const minWithPadding = range > 0 ? min - range * 0.15 : min - 1;
+  const maxWithPadding = range > 0 ? max + range * 0.15 : max + 1;
+  
+  // Función para convertir valor a coordenada Y
+  const getY = (price) => {
+    const normalized = (price - minWithPadding) / (maxWithPadding - minWithPadding);
+    return height - padding - (normalized * (height - padding * 2));
+  };
+  
+  // Función para convertir índice a coordenada X
+  const getX = (index) => {
+    return padding + (index / (data.length - 1)) * (width - padding * 2);
+  };
+  
+  // Crear línea de grilla horizontal (línea de referencia en el medio)
+  const midPrice = (maxWithPadding + minWithPadding) / 2;
+  const midY = getY(midPrice);
+  const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  gridLine.setAttribute('x1', padding);
+  gridLine.setAttribute('y1', midY);
+  gridLine.setAttribute('x2', width - padding);
+  gridLine.setAttribute('y2', midY);
+  gridLine.setAttribute('stroke', 'var(--border)');
+  gridLine.setAttribute('stroke-width', '1');
+  gridLine.setAttribute('stroke-dasharray', '4,4');
+  gridLine.setAttribute('opacity', '0.3');
+  svg.appendChild(gridLine);
+  
+  // Calcular puntos con mejor suavizado
+  const points = data.map((item, index) => ({
+    x: getX(index),
+    y: getY(item.price),
+    price: item.price
+  }));
+  
+  // Crear path suave con interpolación cúbica
+  let pathData = `M ${points[0].x} ${points[0].y}`;
+  
+  for (let i = 0; i < points.length - 1; i++) {
+    const current = points[i];
+    const next = points[i + 1];
+    
+    // Control points para curva suave de Bézier
+    const cp1x = current.x + (next.x - current.x) / 3;
+    const cp1y = current.y;
+    const cp2x = current.x + 2 * (next.x - current.x) / 3;
+    const cp2y = next.y;
+    
+    pathData += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
+  }
+  
+  // Crear área bajo la curva
+  const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const areaData = `${pathData} L ${points[points.length - 1].x} ${height - padding} L ${padding} ${height - padding} Z`;
+  areaPath.setAttribute('d', areaData);
+  areaPath.setAttribute('fill', 'url(#chartGradient)');
+  areaPath.setAttribute('opacity', '0.5');
+  svg.appendChild(areaPath);
+  
+  // Crear línea principal con sombra
+  const shadowLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  shadowLine.setAttribute('d', pathData);
+  shadowLine.setAttribute('fill', 'none');
+  shadowLine.setAttribute('stroke', 'rgba(0, 217, 255, 0.3)');
+  shadowLine.setAttribute('stroke-width', '6');
+  shadowLine.setAttribute('stroke-linecap', 'round');
+  shadowLine.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(shadowLine);
+  
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', pathData);
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke', 'var(--accent)');
+  line.setAttribute('stroke-width', '3');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(line);
+  
+  // Agregar círculos en primer y último punto
+  [0, points.length - 1].forEach(i => {
+    const point = points[i];
+    
+    // Círculo exterior (glow)
+    const outerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    outerCircle.setAttribute('cx', point.x);
+    outerCircle.setAttribute('cy', point.y);
+    outerCircle.setAttribute('r', '8');
+    outerCircle.setAttribute('fill', 'var(--accent)');
+    outerCircle.setAttribute('opacity', '0.2');
+    svg.appendChild(outerCircle);
+    
+    // Círculo principal
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', point.x);
+    circle.setAttribute('cy', point.y);
+    circle.setAttribute('r', '5');
+    circle.setAttribute('fill', 'white');
+    circle.setAttribute('stroke', 'var(--accent)');
+    circle.setAttribute('stroke-width', '3');
+    svg.appendChild(circle);
+  });
+}
 
 // Formatear números
 function formatNumber(num, decimals = 2) {

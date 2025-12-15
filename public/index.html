@@ -116,6 +116,57 @@
         </div>
       </div>
 
+      <!-- Historial y Gráficos -->
+      <div class="history-card">
+        <div class="history-header">
+          <div>
+            <h3>📊 Historial de Precios</h3>
+            <p class="history-subtitle">Evolución del USDT/ARS en el tiempo</p>
+          </div>
+          <div class="period-selector">
+            <button class="period-btn active" data-period="1h">1h</button>
+            <button class="period-btn" data-period="6h">6h</button>
+            <button class="period-btn" data-period="24h">24h</button>
+            <button class="period-btn" data-period="7d">7d</button>
+            <button class="period-btn" data-period="30d">30d</button>
+          </div>
+        </div>
+
+        <div class="history-stats">
+          <div class="stat-item">
+            <div class="stat-label">Máximo</div>
+            <div class="stat-value" id="statMax">--</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Mínimo</div>
+            <div class="stat-value" id="statMin">--</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Promedio</div>
+            <div class="stat-value" id="statAvg">--</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Variación</div>
+            <div class="stat-value" id="statChange">--</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <svg id="priceChart" width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgba(0,217,255,0.3);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgba(0,217,255,0);stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="chart-empty" id="chartEmpty">
+            <p>📈 Recopilando datos...</p>
+            <span>El gráfico se poblará automáticamente mientras uses la aplicación</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Alertas de Precio -->
       <div class="alerts-card">
         <div class="alerts-header">
