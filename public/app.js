@@ -14,7 +14,16 @@ const elements = {
   resultValue: document.getElementById('resultValue'),
   btnCopy: document.getElementById('btnCopy'),
   statusMessage: document.getElementById('statusMessage'),
-  themeToggle: document.getElementById('themeToggle')
+  themeToggle: document.getElementById('themeToggle'),
+  commissionCard: document.getElementById('commissionCard'),
+  commBase: document.getElementById('commBase'),
+  commMarkup: document.getElementById('commMarkup'),
+  commMarkupPercent: document.getElementById('commMarkupPercent'),
+  commSubtotal: document.getElementById('commSubtotal'),
+  commRounding: document.getElementById('commRounding'),
+  commTotal: document.getElementById('commTotal'),
+  markupRow: document.getElementById('markupRow'),
+  roundingRow: document.getElementById('roundingRow')
 };
 
 // Inicializar la aplicación
@@ -84,24 +93,66 @@ function calculatePrice() {
 
   if (usdtAmount <= 0 || !currentRate) {
     elements.resultValue.textContent = '$ 0';
+    elements.commissionCard.style.display = 'none';
     return;
   }
 
   // Calcular precio base
-  let priceARS = usdtAmount * currentRate;
-
+  const basePrice = usdtAmount * currentRate;
+  
   // Aplicar markup
-  if (markupPercent > 0) {
-    priceARS = priceARS * (1 + markupPercent / 100);
-  }
+  const markupAmount = basePrice * (markupPercent / 100);
+  const priceWithMarkup = basePrice + markupAmount;
 
   // Aplicar redondeo
+  let finalPrice = priceWithMarkup;
+  let roundingAdjustment = 0;
+  
   if (roundingValue > 0) {
-    priceARS = Math.round(priceARS / roundingValue) * roundingValue;
+    finalPrice = Math.round(priceWithMarkup / roundingValue) * roundingValue;
+    roundingAdjustment = finalPrice - priceWithMarkup;
   }
 
-  // Mostrar resultado
-  elements.resultValue.textContent = `$ ${formatNumber(priceARS, 0)}`;
+  // Mostrar resultado principal
+  elements.resultValue.textContent = `$ ${formatNumber(finalPrice, 0)}`;
+
+  // Actualizar desglose de comisiones
+  updateCommissionBreakdown({
+    base: basePrice,
+    markup: markupAmount,
+    markupPercent: markupPercent,
+    subtotal: priceWithMarkup,
+    rounding: roundingAdjustment,
+    total: finalPrice
+  });
+
+  // Mostrar el card de comisiones
+  elements.commissionCard.style.display = 'block';
+}
+
+// Actualizar el desglose de comisiones
+function updateCommissionBreakdown(data) {
+  elements.commBase.textContent = `$ ${formatNumber(data.base, 2)}`;
+  elements.commSubtotal.textContent = `$ ${formatNumber(data.subtotal, 2)}`;
+  elements.commTotal.textContent = `$ ${formatNumber(data.total, 0)}`;
+
+  // Mostrar/ocultar fila de markup
+  if (data.markupPercent > 0) {
+    elements.markupRow.style.display = 'flex';
+    elements.commMarkupPercent.textContent = data.markupPercent;
+    elements.commMarkup.textContent = `+ $ ${formatNumber(data.markup, 2)}`;
+  } else {
+    elements.markupRow.style.display = 'none';
+  }
+
+  // Mostrar/ocultar fila de redondeo
+  if (Math.abs(data.rounding) > 0.01) {
+    elements.roundingRow.style.display = 'flex';
+    const sign = data.rounding >= 0 ? '+' : '';
+    elements.commRounding.textContent = `${sign} $ ${formatNumber(data.rounding, 2)}`;
+  } else {
+    elements.roundingRow.style.display = 'none';
+  }
 }
 
 // Copiar precio al portapapeles

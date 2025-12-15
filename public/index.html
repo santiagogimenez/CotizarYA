@@ -86,6 +86,55 @@
         </div>
       </div>
 
+      <!-- Calculadora de Comisiones -->
+      <div class="commission-card" id="commissionCard" style="display: none;">
+        <div class="commission-header">
+          <h3>💰 Desglose de Comisiones</h3>
+          <p class="commission-subtitle">Entendé el costo real de tu operación</p>
+        </div>
+        
+        <div class="commission-content">
+          <div class="commission-row">
+            <span class="commission-label">Precio base (USDT × Cotización)</span>
+            <span class="commission-value" id="commBase">$ 0</span>
+          </div>
+          
+          <div class="commission-row highlight" id="markupRow" style="display: none;">
+            <span class="commission-label">
+              <span>Tu markup/recargo (<span id="commMarkupPercent">0</span>%)</span>
+            </span>
+            <span class="commission-value success" id="commMarkup">+ $ 0</span>
+          </div>
+          
+          <div class="commission-divider"></div>
+          
+          <div class="commission-row">
+            <span class="commission-label">Subtotal antes de redondeo</span>
+            <span class="commission-value" id="commSubtotal">$ 0</span>
+          </div>
+          
+          <div class="commission-row" id="roundingRow" style="display: none;">
+            <span class="commission-label">Ajuste por redondeo</span>
+            <span class="commission-value" id="commRounding">$ 0</span>
+          </div>
+          
+          <div class="commission-divider"></div>
+          
+          <div class="commission-row total">
+            <span class="commission-label">Total a cobrar</span>
+            <span class="commission-value" id="commTotal">$ 0</span>
+          </div>
+        </div>
+        
+        <div class="commission-info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4M12 8h.01"></path>
+          </svg>
+          <span>Este desglose te ayuda a entender cada peso que cobrás o pagás en la operación.</span>
+        </div>
+      </div>
+
       <div class="status-message" id="statusMessage"></div>
     </main>
 
