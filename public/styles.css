@@ -21,6 +21,23 @@
   --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
+[data-theme="dark"] {
+  --primary: #ffffff;
+  --accent: #00d9ff;
+  --accent-hover: #00b8d4;
+  --success: #00e676;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --bg-primary: #0f172a;
+  --bg-secondary: #0a0e27;
+  --bg-card: #1e293b;
+  --border: #334155;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
   background: var(--bg-secondary);
@@ -42,6 +59,13 @@ header {
   margin-bottom: 40px;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
 header h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -54,6 +78,69 @@ header h1 {
   font-size: 0.95rem;
   color: var(--text-secondary);
   font-weight: 400;
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.branding-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.branding-name {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-secondary);
+  border-color: var(--text-muted);
+}
+
+.theme-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .theme-icon {
+  background: transparent;
+  box-shadow: inset -4px -4px 0 0 var(--text-secondary);
+  transform: rotate(-25deg);
+}
+
+.theme-toggle:hover .theme-icon {
+  background: var(--text-primary);
+}
+
+[data-theme="dark"] .theme-toggle:hover .theme-icon {
+  background: transparent;
+  box-shadow: inset -4px -4px 0 0 var(--text-primary);
 }
 
 main {
@@ -311,34 +398,144 @@ footer strong {
   font-size: 0.75rem;
 }
 
+.footer-brand {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .container {
-    padding: 24px 16px;
+    padding: 20px 16px;
+  }
+
+  .header-top {
+    align-items: flex-start;
   }
 
   header h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .subtitle {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .branding-text {
+    font-size: 0.6875rem;
+  }
+
+  .branding-name {
+    font-size: 0.75rem;
+  }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  .theme-icon {
+    width: 16px;
+    height: 16px;
   }
 
   .rate-card,
-  .calculator-card,
+  .calculator-card {
+    padding: 20px 16px;
+  }
+
   .result-card {
-    padding: 20px;
+    padding: 24px 16px;
+  }
+
+  .rate-info {
+    padding-right: 50px;
+  }
+
+  .rate-label {
+    font-size: 0.75rem;
   }
 
   .rate-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+
+  .rate-source {
+    font-size: 0.75rem;
+  }
+
+  .btn-refresh {
+    width: 32px;
+    height: 32px;
+    top: 20px;
+    right: 16px;
+  }
+
+  .btn-refresh svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 0.875rem;
+  }
+
+  .result-label {
+    font-size: 0.75rem;
   }
 
   .result-value {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
+    margin-bottom: 20px;
   }
 
   .btn-copy {
     width: 100%;
+    padding: 12px 24px;
+    font-size: 0.875rem;
+  }
+
+  footer {
+    font-size: 0.75rem;
+    margin-top: 40px;
+  }
+
+  .footer-note,
+  .footer-brand {
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    padding: 16px 12px;
+  }
+
+  header h1 {
+    font-size: 1.375rem;
+  }
+
+  .rate-value {
+    font-size: 1.5rem;
+  }
+
+  .result-value {
+    font-size: 2rem;
   }
 }

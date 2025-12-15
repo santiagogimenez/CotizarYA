@@ -13,14 +13,29 @@ const elements = {
   rounding: document.getElementById('rounding'),
   resultValue: document.getElementById('resultValue'),
   btnCopy: document.getElementById('btnCopy'),
-  statusMessage: document.getElementById('statusMessage')
+  statusMessage: document.getElementById('statusMessage'),
+  themeToggle: document.getElementById('themeToggle')
 };
 
 // Inicializar la aplicación
 async function init() {
+  loadTheme();
   await fetchRate();
   setupEventListeners();
   startAutoRefresh();
+}
+
+// Gestión del tema oscuro
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
 }
 
 // Obtener la cotización desde el backend
@@ -116,6 +131,7 @@ async function copyToClipboard() {
 function setupEventListeners() {
   elements.btnRefresh.addEventListener('click', () => fetchRate(true));
   elements.btnCopy.addEventListener('click', copyToClipboard);
+  elements.themeToggle.addEventListener('click', toggleTheme);
   
   elements.usdtAmount.addEventListener('input', calculatePrice);
   elements.markup.addEventListener('input', calculatePrice);
