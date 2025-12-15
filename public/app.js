@@ -1,6 +1,7 @@
 // Estado de la aplicación
 let currentRate = null;
 let autoRefreshInterval = null;
+let platformsAutoRefreshInterval = null;
 
 // Elementos del DOM
 const elements = {
@@ -23,15 +24,19 @@ const elements = {
   commRounding: document.getElementById('commRounding'),
   commTotal: document.getElementById('commTotal'),
   markupRow: document.getElementById('markupRow'),
-  roundingRow: document.getElementById('roundingRow')
+  roundingRow: document.getElementById('roundingRow'),
+  platformsList: document.getElementById('platformsList'),
+  btnRefreshPlatforms: document.getElementById('btnRefreshPlatforms')
 };
 
 // Inicializar la aplicación
 async function init() {
   loadTheme();
   await fetchRate();
+  await fetchPlatforms();
   setupEventListeners();
   startAutoRefresh();
+  startPlatformsAutoRefresh();
 }
 
 // Gestión del tema oscuro
@@ -181,6 +186,7 @@ async function copyToClipboard() {
 // Configurar event listeners
 function setupEventListeners() {
   elements.btnRefresh.addEventListener('click', () => fetchRate(true));
+  elements.btnRefreshPlatforms.addEventListener('click', () => fetchPlatforms(true));
   elements.btnCopy.addEventListener('click', copyToClipboard);
   elements.themeToggle.addEventListener('click', toggleTheme);
   
@@ -201,6 +207,103 @@ function startAutoRefresh() {
   autoRefreshInterval = setInterval(() => {
     fetchRate(false);
   }, 30000);
+}
+
+function startPlatformsAutoRefresh() {
+  platformsAutoRefreshInterval = setInterval(() => {
+    fetchPlatforms(false);
+  }, 30000);
+}
+
+// Obtener cotizaciones de plataformas
+async function fetchPlatforms(showLoading = true) {
+  if (showLoading) {
+    elements.btnRefreshPlatforms.classList.add('loading');
+    elements.platformsList.innerHTML = `
+      <div class="platforms-loading">
+        <div class="spinner"></div>
+        <p>Consultando plataformas...</p>
+      </div>
+    `;
+  }
+
+  try {
+    const response = await fetch('/api/platforms');
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener las cotizaciones');
+    }
+
+    const data = await response.json();
+    renderPlatforms(data.platforms);
+
+  } catch (error) {
+    console.error('Error al obtener plataformas:', error);
+    elements.platformsList.innerHTML = `
+      <div class="platforms-loading">
+        <p style="color: var(--text-muted);">❌ No se pudieron cargar las plataformas</p>
+      </div>
+    `;
+  } finally {
+    if (showLoading) {
+      elements.btnRefreshPlatforms.classList.remove('loading');
+    }
+  }
+}
+
+// Renderizar plataformas
+function renderPlatforms(data) {
+  if (!data.available || data.available.length === 0) {
+    elements.platformsList.innerHTML = `
+      <div class="platforms-loading">
+        <p style="color: var(--text-muted);">No hay plataformas disponibles en este momento</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  
+  data.available.forEach((platform, index) => {
+    const isBest = index === 0; // El primero es el mejor precio
+    html += `
+      <div class="platform-item ${isBest ? 'best' : ''}">
+        <div class="platform-info">
+          <div class="platform-icon">${platform.icon}</div>
+          <div class="platform-details">
+            <div class="platform-name">${platform.name}</div>
+            <div class="platform-type">Venta USDT</div>
+          </div>
+        </div>
+        <div class="platform-price">
+          <div class="platform-price-value">$ ${formatNumber(platform.ask, 2)}</div>
+          <div class="platform-price-label">por USDT</div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Agregar plataformas no disponibles al final si existen
+  if (data.unavailable && data.unavailable.length > 0) {
+    data.unavailable.forEach(platform => {
+      html += `
+        <div class="platform-item unavailable">
+          <div class="platform-info">
+            <div class="platform-icon">${platform.icon}</div>
+            <div class="platform-details">
+              <div class="platform-name">${platform.name}</div>
+              <div class="platform-type">No disponible</div>
+            </div>
+          </div>
+          <div class="platform-price">
+            <div class="platform-price-value">-</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  elements.platformsList.innerHTML = html;
 }
 
 // Formatear números
@@ -238,6 +341,9 @@ function hideStatusMessage() {
 window.addEventListener('beforeunload', () => {
   if (autoRefreshInterval) {
     clearInterval(autoRefreshInterval);
+  }
+  if (platformsAutoRefreshInterval) {
+    clearInterval(platformsAutoRefreshInterval);
   }
 });
 
