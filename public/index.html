@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CotizarYA - USDT a ARS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>💱 CotizarYA</h1>
+      <p class="subtitle">Convertí USDT a pesos argentinos en tiempo real</p>
+    </header>
+
+    <main>
+      <div class="rate-card">
+        <div class="rate-info">
+          <div class="rate-label">Cotización USDT/ARS</div>
+          <div class="rate-value" id="rateValue">--</div>
+          <div class="rate-source">
+            <span id="rateSource">Binance P2P</span>
+            <span class="rate-timestamp" id="rateTimestamp">--</span>
+          </div>
+        </div>
+        <button class="btn-refresh" id="btnRefresh" title="Actualizar cotización">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="calculator-card">
+        <div class="form-group">
+          <label for="usdtAmount">Monto en USDT</label>
+          <input 
+            type="number" 
+            id="usdtAmount" 
+            placeholder="Ej: 100" 
+            min="0" 
+            step="0.01"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="markup">Recargo / Markup (%)</label>
+          <input 
+            type="number" 
+            id="markup" 
+            placeholder="Ej: 5" 
+            value="0"
+            min="0" 
+            step="0.5"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="rounding">Redondeo</label>
+          <select id="rounding">
+            <option value="0">Sin redondeo</option>
+            <option value="10">Cada $10</option>
+            <option value="50">Cada $50</option>
+            <option value="100" selected>Cada $100</option>
+            <option value="500">Cada $500</option>
+          </select>
+        </div>
+
+        <div class="result-card">
+          <div class="result-label">Precio final</div>
+          <div class="result-value" id="resultValue">$ 0</div>
+          <button class="btn-copy" id="btnCopy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copiar precio
+          </button>
+        </div>
+      </div>
+
+      <div class="status-message" id="statusMessage"></div>
+    </main>
+
+    <footer>
+      <p>Cotización desde <strong>Binance P2P</strong> vía CriptoYa</p>
+      <p class="footer-note">Actualización automática cada 30 segundos</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

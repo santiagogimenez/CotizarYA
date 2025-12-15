@@ -1,0 +1,289 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #0066ff;
+  --primary-dark: #0052cc;
+  --success: #00c853;
+  --error: #ff1744;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --border: #e0e0e0;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: var(--text-primary);
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  font-weight: 400;
+}
+
+main {
+  background: var(--bg-primary);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+}
+
+.rate-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  color: white;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+
+.rate-info {
+  padding-right: 50px;
+}
+
+.rate-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.rate-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.rate-source {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.rate-timestamp {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.btn-refresh {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.btn-refresh:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(180deg);
+}
+
+.btn-refresh:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+.btn-refresh.loading {
+  animation: spin 1s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.calculator-card {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #999;
+}
+
+.result-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.result-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 20px;
+  word-break: break-word;
+}
+
+.btn-copy {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.btn-copy:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.btn-copy:active {
+  transform: translateY(0);
+}
+
+.btn-copy.success {
+  background: var(--success);
+}
+
+.status-message {
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-top: 20px;
+  display: none;
+}
+
+.status-message.show {
+  display: block;
+}
+
+.status-message.error {
+  background: #ffebee;
+  color: var(--error);
+}
+
+.status-message.success {
+  background: #e8f5e9;
+  color: var(--success);
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+footer p {
+  margin-bottom: 4px;
+}
+
+.footer-note {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 10px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .rate-value {
+    font-size: 2rem;
+  }
+
+  .result-value {
+    font-size: 2.5rem;
+  }
+}
