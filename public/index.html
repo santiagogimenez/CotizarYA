@@ -116,6 +116,45 @@
         </div>
       </div>
 
+      <!-- Alertas de Precio -->
+      <div class="alerts-card">
+        <div class="alerts-header">
+          <h3>🔔 Alertas de Precio</h3>
+          <p class="alerts-subtitle">Te notificamos cuando el USDT llegue a tu precio objetivo</p>
+        </div>
+
+        <div class="alerts-form">
+          <div class="form-row">
+            <div class="form-group-inline">
+              <label for="alertPrice">Precio objetivo (ARS)</label>
+              <input 
+                type="number" 
+                id="alertPrice" 
+                placeholder="Ej: 1200" 
+                min="0" 
+                step="0.01"
+                autocomplete="off"
+              >
+            </div>
+            <div class="form-group-inline">
+              <label for="alertType">Tipo de alerta</label>
+              <select id="alertType">
+                <option value="above">Cuando suba a</option>
+                <option value="below">Cuando baje a</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-add-alert" id="btnAddAlert">+ Crear Alerta</button>
+        </div>
+
+        <div class="alerts-list" id="alertsList">
+          <div class="alerts-empty">
+            <p>📭 No tenés alertas configuradas</p>
+            <span>Configurá una alerta para recibir notificaciones cuando el precio alcance tu objetivo</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Calculadora de Comisiones -->
       <div class="commission-card" id="commissionCard" style="display: none;">
         <div class="commission-header">

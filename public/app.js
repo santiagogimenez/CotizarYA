@@ -2,6 +2,7 @@
 let currentRate = null;
 let autoRefreshInterval = null;
 let platformsAutoRefreshInterval = null;
+let alerts = [];
 
 // Elementos del DOM
 const elements = {
@@ -26,12 +27,17 @@ const elements = {
   markupRow: document.getElementById('markupRow'),
   roundingRow: document.getElementById('roundingRow'),
   platformsList: document.getElementById('platformsList'),
-  btnRefreshPlatforms: document.getElementById('btnRefreshPlatforms')
+  btnRefreshPlatforms: document.getElementById('btnRefreshPlatforms'),
+  alertPrice: document.getElementById('alertPrice'),
+  alertType: document.getElementById('alertType'),
+  btnAddAlert: document.getElementById('btnAddAlert'),
+  alertsList: document.getElementById('alertsList')
 };
 
 // Inicializar la aplicación
 async function init() {
   loadTheme();
+  loadAlerts();
   await fetchRate();
   await fetchPlatforms();
   setupEventListeners();
@@ -77,6 +83,9 @@ async function fetchRate(showLoading = true) {
     if (elements.usdtAmount.value) {
       calculatePrice();
     }
+
+    // Verificar alertas
+    checkAlerts(data.ask);
 
     hideStatusMessage();
 
@@ -189,6 +198,7 @@ function setupEventListeners() {
   elements.btnRefreshPlatforms.addEventListener('click', () => fetchPlatforms(true));
   elements.btnCopy.addEventListener('click', copyToClipboard);
   elements.themeToggle.addEventListener('click', toggleTheme);
+  elements.btnAddAlert.addEventListener('click', addAlert);
   
   elements.usdtAmount.addEventListener('input', calculatePrice);
   elements.markup.addEventListener('input', calculatePrice);
@@ -198,6 +208,13 @@ function setupEventListeners() {
   elements.usdtAmount.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       calculatePrice();
+    }
+  });
+
+  // Agregar alerta al presionar Enter
+  elements.alertPrice.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      addAlert();
     }
   });
 }
@@ -265,7 +282,7 @@ function renderPlatforms(data) {
   let html = '';
   
   data.available.forEach((platform, index) => {
-    const isBest = index === 0; // El primero es el mejor precio
+    const isBest = index === 0;
     html += `
       <div class="platform-item ${isBest ? 'best' : ''}">
         <div class="platform-info">
@@ -283,7 +300,6 @@ function renderPlatforms(data) {
     `;
   });
 
-  // Agregar plataformas no disponibles al final si existen
   if (data.unavailable && data.unavailable.length > 0) {
     data.unavailable.forEach(platform => {
       html += `
@@ -305,6 +321,134 @@ function renderPlatforms(data) {
 
   elements.platformsList.innerHTML = html;
 }
+
+// Sistema de Alertas de Precio
+function loadAlerts() {
+  const saved = localStorage.getItem('priceAlerts');
+  alerts = saved ? JSON.parse(saved) : [];
+  renderAlerts();
+}
+
+function saveAlerts() {
+  localStorage.setItem('priceAlerts', JSON.stringify(alerts));
+}
+
+function addAlert() {
+  const price = parseFloat(elements.alertPrice.value);
+  const type = elements.alertType.value;
+
+  if (!price || price <= 0) {
+    showStatusMessage('Ingresá un precio válido', 'error');
+    return;
+  }
+
+  const alert = {
+    id: Date.now(),
+    price: price,
+    type: type,
+    triggered: false,
+    createdAt: new Date().toISOString()
+  };
+
+  alerts.push(alert);
+  saveAlerts();
+  renderAlerts();
+
+  elements.alertPrice.value = '';
+  showStatusMessage('✅ Alerta creada correctamente', 'success');
+}
+
+function deleteAlert(id) {
+  alerts = alerts.filter(alert => alert.id !== id);
+  saveAlerts();
+  renderAlerts();
+}
+
+function renderAlerts() {
+  if (alerts.length === 0) {
+    elements.alertsList.innerHTML = `
+      <div class="alerts-empty">
+        <p>📭 No tenés alertas configuradas</p>
+        <span>Configurá una alerta para recibir notificaciones cuando el precio alcance tu objetivo</span>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  alerts.forEach(alert => {
+    const typeText = alert.type === 'above' ? '⬆️ Suba a' : '⬇️ Baje a';
+    const triggeredClass = alert.triggered ? 'triggered' : '';
+    
+    html += `
+      <div class="alert-item ${triggeredClass}">
+        <div class="alert-info">
+          <div class="alert-target">$ ${formatNumber(alert.price, 2)}</div>
+          <div class="alert-condition">
+            <span class="icon">${typeText}</span>
+            ${alert.triggered ? '<strong style="color: var(--success);">✓ Activada</strong>' : 'Esperando...'}
+          </div>
+        </div>
+        <div class="alert-actions">
+          <button class="btn-delete-alert" onclick="deleteAlert(${alert.id})" title="Eliminar alerta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  elements.alertsList.innerHTML = html;
+}
+
+function checkAlerts(currentPrice) {
+  alerts.forEach(alert => {
+    if (alert.triggered) return;
+
+    let shouldTrigger = false;
+
+    if (alert.type === 'above' && currentPrice >= alert.price) {
+      shouldTrigger = true;
+    } else if (alert.type === 'below' && currentPrice <= alert.price) {
+      shouldTrigger = true;
+    }
+
+    if (shouldTrigger) {
+      alert.triggered = true;
+      saveAlerts();
+      renderAlerts();
+      showNotification(alert, currentPrice);
+    }
+  });
+}
+
+function showNotification(alert, currentPrice) {
+  const typeText = alert.type === 'above' ? 'subió' : 'bajó';
+  
+  const notification = document.createElement('div');
+  notification.className = 'alert-notification';
+  notification.innerHTML = `
+    <div class="alert-notification-header">
+      <div class="alert-notification-icon">🔔</div>
+      <div class="alert-notification-title">¡Alerta de Precio!</div>
+    </div>
+    <div class="alert-notification-body">
+      El USDT ${typeText} a <strong>$ ${formatNumber(currentPrice, 2)}</strong><br>
+      Tu precio objetivo era $ ${formatNumber(alert.price, 2)}
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.style.animation = 'slideOutRight 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 5000);
+}
+
+window.deleteAlert = deleteAlert;
 
 // Formatear números
 function formatNumber(num, decimals = 2) {
