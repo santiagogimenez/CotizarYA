@@ -659,10 +659,16 @@ function drawChart(data, min, max) {
   const height = 200;
   const padding = 30;
   
-  // Limpiar SVG
-  while (svg.childNodes.length > 1) {
-    svg.removeChild(svg.lastChild);
-  }
+  // Limpiar SVG (excepto defs)
+  const gridLines = svg.querySelector('#gridLines');
+  const priceLabels = svg.querySelector('#priceLabels');
+  const chartArea = svg.querySelector('#chartArea');
+  const dataPoints = svg.querySelector('#dataPoints');
+  
+  if (gridLines) gridLines.innerHTML = '';
+  if (priceLabels) priceLabels.innerHTML = '';
+  if (chartArea) chartArea.innerHTML = '';
+  if (dataPoints) dataPoints.innerHTML = '';
   
   if (data.length < 2) return;
   
@@ -682,25 +688,37 @@ function drawChart(data, min, max) {
     return padding + (index / (data.length - 1)) * (width - padding * 2);
   };
   
-  // Crear línea de grilla horizontal (línea de referencia en el medio)
-  const midPrice = (maxWithPadding + minWithPadding) / 2;
-  const midY = getY(midPrice);
-  const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  gridLine.setAttribute('x1', padding);
-  gridLine.setAttribute('y1', midY);
-  gridLine.setAttribute('x2', width - padding);
-  gridLine.setAttribute('y2', midY);
-  gridLine.setAttribute('stroke', 'var(--border)');
-  gridLine.setAttribute('stroke-width', '1');
-  gridLine.setAttribute('stroke-dasharray', '4,4');
-  gridLine.setAttribute('opacity', '0.3');
-  svg.appendChild(gridLine);
+  // Crear grid horizontal (3 líneas de referencia)
+  const gridPrices = [minWithPadding, (minWithPadding + maxWithPadding) / 2, maxWithPadding];
+  gridPrices.forEach((price, idx) => {
+    if (idx === 0 || idx === 2) return; // Solo línea del medio
+    const y = getY(price);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', padding);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', width - padding);
+    line.setAttribute('y2', y);
+    gridLines.appendChild(line);
+  });
+  
+  // Agregar etiquetas de precio en el eje Y
+  [maxWithPadding, (minWithPadding + maxWithPadding) / 2, minWithPadding].forEach((price) => {
+    const y = getY(price);
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', padding - 8);
+    label.setAttribute('y', y + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.textContent = `$${price.toFixed(0)}`;
+    priceLabels.appendChild(label);
+  });
   
   // Calcular puntos con mejor suavizado
   const points = data.map((item, index) => ({
     x: getX(index),
     y: getY(item.price),
-    price: item.price
+    price: item.price,
+    timestamp: item.timestamp,
+    index: index
   }));
   
   // Crear path suave con interpolación cúbica
@@ -725,7 +743,7 @@ function drawChart(data, min, max) {
   areaPath.setAttribute('d', areaData);
   areaPath.setAttribute('fill', 'url(#chartGradient)');
   areaPath.setAttribute('opacity', '0.5');
-  svg.appendChild(areaPath);
+  chartArea.appendChild(areaPath);
   
   // Crear línea principal con sombra
   const shadowLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -735,7 +753,7 @@ function drawChart(data, min, max) {
   shadowLine.setAttribute('stroke-width', '6');
   shadowLine.setAttribute('stroke-linecap', 'round');
   shadowLine.setAttribute('stroke-linejoin', 'round');
-  svg.appendChild(shadowLine);
+  chartArea.appendChild(shadowLine);
   
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   line.setAttribute('d', pathData);
@@ -744,7 +762,8 @@ function drawChart(data, min, max) {
   line.setAttribute('stroke-width', '3');
   line.setAttribute('stroke-linecap', 'round');
   line.setAttribute('stroke-linejoin', 'round');
-  svg.appendChild(line);
+  line.classList.add('chart-path');
+  chartArea.appendChild(line);
   
   // Agregar círculos en primer y último punto
   [0, points.length - 1].forEach(i => {
@@ -757,7 +776,7 @@ function drawChart(data, min, max) {
     outerCircle.setAttribute('r', '8');
     outerCircle.setAttribute('fill', 'var(--accent)');
     outerCircle.setAttribute('opacity', '0.2');
-    svg.appendChild(outerCircle);
+    chartArea.appendChild(outerCircle);
     
     // Círculo principal
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -767,8 +786,100 @@ function drawChart(data, min, max) {
     circle.setAttribute('fill', 'white');
     circle.setAttribute('stroke', 'var(--accent)');
     circle.setAttribute('stroke-width', '3');
-    svg.appendChild(circle);
+    chartArea.appendChild(circle);
   });
+  
+  // Agregar puntos interactivos invisibles sobre la línea (cada 5 puntos para mejor rendimiento)
+  const step = Math.max(1, Math.floor(points.length / 30));
+  points.forEach((point, index) => {
+    if (index % step === 0 || index === 0 || index === points.length - 1) {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', point.x);
+      circle.setAttribute('cy', point.y);
+      circle.setAttribute('r', '4');
+      circle.setAttribute('fill', 'rgba(0, 212, 255, 0)');
+      circle.setAttribute('stroke', 'transparent');
+      circle.setAttribute('stroke-width', '0');
+      circle.classList.add('data-point');
+      circle.dataset.price = point.price.toFixed(2);
+      circle.dataset.timestamp = point.timestamp;
+      circle.dataset.x = point.x;
+      dataPoints.appendChild(circle);
+    }
+  });
+  
+  // Configurar interactividad del gráfico
+  setupChartInteractivity(points);
+}
+
+function setupChartInteractivity(points) {
+  const container = document.getElementById('chartContainer');
+  const svg = elements.priceChart;
+  const tooltip = document.getElementById('chartTooltip');
+  const crosshair = document.getElementById('crosshair');
+  const tooltipDate = tooltip.querySelector('.tooltip-date');
+  const tooltipPrice = tooltip.querySelector('.tooltip-price');
+  
+  if (!container || !tooltip || !crosshair) return;
+  
+  let currentPointIndex = -1;
+  
+  function showTooltip(point, x) {
+    const date = new Date(point.timestamp);
+    const dateStr = date.toLocaleDateString('es-AR', { 
+      day: '2-digit', 
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    tooltipDate.textContent = dateStr;
+    tooltipPrice.textContent = `$ ${formatNumber(point.price, 2)}`;
+    tooltip.classList.add('visible');
+    tooltip.style.left = `${x}px`;
+    
+    crosshair.setAttribute('x1', point.x);
+    crosshair.setAttribute('x2', point.x);
+    crosshair.setAttribute('opacity', '0.6');
+  }
+  
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
+    crosshair.setAttribute('opacity', '0');
+    currentPointIndex = -1;
+  }
+  
+  function findNearestPoint(mouseX) {
+    // Convertir coordenadas del mouse a coordenadas SVG
+    const rect = svg.getBoundingClientRect();
+    const svgX = (mouseX / rect.width) * 800;
+    
+    let nearestPoint = null;
+    let minDistance = Infinity;
+    
+    points.forEach(point => {
+      const distance = Math.abs(point.x - svgX);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestPoint = point;
+      }
+    });
+    
+    return nearestPoint;
+  }
+  
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const nearestPoint = findNearestPoint(mouseX);
+    
+    if (nearestPoint && nearestPoint.index !== currentPointIndex) {
+      currentPointIndex = nearestPoint.index;
+      showTooltip(nearestPoint, mouseX);
+    }
+  });
+  
+  container.addEventListener('mouseleave', hideTooltip);
 }
 
 // Formatear números
