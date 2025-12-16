@@ -20,6 +20,7 @@ let platformsCache = {
 // Middleware
 app.use(express.json());
 app.use(express.static('public'));
+app.use('/UI_iconos', express.static('UI_iconos'));
 
 // Endpoint principal para obtener la cotización
 app.get('/api/rate', async (req, res) => {

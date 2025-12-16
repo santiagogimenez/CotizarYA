@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CotizarYA - USDT a ARS</title>
+  <title>CotizarYA - Cotización USDT/ARS en Tiempo Real</title>
+  <meta name="description" content="Convertí USDT a pesos argentinos con las mejores cotizaciones del mercado P2P. Calculadora inteligente con comparación de plataformas en tiempo real.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💱</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <header>
       <div class="header-top">
-        <div>
-          <h1>CotizarYA</h1>
-          <p class="subtitle">Convertí USDT a pesos argentinos en tiempo real</p>
-        </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
           <span class="theme-icon"></span>
         </button>
+      </div>
+      <div>
+        <h1>CotizarYA</h1>
+        <p class="subtitle">Convertí USDT a pesos argentinos con las mejores cotizaciones del mercado en tiempo real</p>
       </div>
       <div class="branding">
         <span class="branding-text">by</span>
@@ -35,20 +39,18 @@
             <span class="rate-timestamp" id="rateTimestamp">--</span>
           </div>
         </div>
-        <button class="btn-refresh" id="btnRefresh" title="Actualizar cotización">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
+        <button class="btn-refresh" id="btnRefresh" title="Actualizar cotización" aria-label="Actualizar cotización">
+          <img src="/UI_iconos/core-line-free/Interface Essential/Arrow Reload Horizontal 2--reload-arrow-horizontal-repeat-load-return-synchronize-recycle-refresh-loop-renew-cycle-arrows-update-sync.svg" width="20" height="20" alt="Actualizar">
         </button>
       </div>
 
       <div class="calculator-card">
         <div class="mode-toggle">
           <button class="mode-btn active" data-mode="seller" id="btnModeSeller">
-            💼 Modo Vendedor
+            Modo Vendedor
           </button>
           <button class="mode-btn" data-mode="user" id="btnModeUser">
-            👤 Modo Usuario Final
+            Modo Usuario Final
           </button>
         </div>
 
@@ -99,13 +101,11 @@
       <div class="platforms-card">
         <div class="platforms-header">
           <div>
-            <h3>🏦 Comparador de Plataformas</h3>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Money Shopping/Bank--bank-institution-saving-payment-finance-building-money-house-architecture-government-economy-columns-classic-savings.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Comparador de Plataformas</h3>
             <p class="platforms-subtitle">Encontrá la mejor cotización del mercado</p>
           </div>
           <button class="btn-refresh-platforms" id="btnRefreshPlatforms" title="Actualizar plataformas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-            </svg>
+            <img src="/UI_iconos/core-line-free/Interface Essential/Arrow Reload Horizontal 2--reload-arrow-horizontal-repeat-load-return-synchronize-recycle-refresh-loop-renew-cycle-arrows-update-sync.svg" width="18" height="18" alt="Actualizar">
           </button>
         </div>
 
@@ -129,7 +129,7 @@
       <div class="history-card">
         <div class="history-header">
           <div>
-            <h3>📊 Historial de Precios</h3>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Money Shopping/Graph Arrow Increase--arrow-graph-growth-ascend-up-stats-right-grow-stat-data-chart-increase-increasing-descend-progress-uptrend-finance-linechart-improve-trend-success.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Historial de Precios</h3>
             <p class="history-subtitle">Evolución del USDT/ARS en el tiempo</p>
           </div>
           <div class="period-selector">
@@ -185,7 +185,7 @@
             <div class="tooltip-price"></div>
           </div>
           <div class="chart-empty" id="chartEmpty">
-            <p>📈 Recopilando datos...</p>
+            <p>Recopilando datos...</p>
             <span>El gráfico se poblará automáticamente mientras uses la aplicación</span>
           </div>
         </div>
@@ -195,7 +195,7 @@
       <div class="alerts-card">
         <div class="alerts-header">
           <div>
-            <h3>🔔 Alertas de Precio</h3>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Interface Essential/Ringing Bell Notification--notification-vibrate-ring-sound-alarm-alert-bell-noise-ringing-reminder-signal-message-volume-mute-silence.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Alertas de Precio</h3>
             <p class="alerts-subtitle">Te notificamos cuando el USDT llegue a tu precio objetivo</p>
           </div>
           <button class="btn-clear-alerts" id="btnClearAlerts" title="Limpiar alertas activadas">
@@ -232,7 +232,7 @@
 
         <div class="alerts-list" id="alertsList">
           <div class="alerts-empty">
-            <p>📭 No tenés alertas configuradas</p>
+            <p>No tenés alertas configuradas</p>
             <span>Configurá una alerta para recibir notificaciones cuando el precio alcance tu objetivo</span>
           </div>
         </div>
@@ -241,14 +241,14 @@
       <!-- Dollar Blue vs USDT -->
       <div class="comparison-card">
         <div class="comparison-header">
-          <h3>💵 Dólar Blue vs USDT</h3>
+          <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Money Shopping/Bank--bank-institution-saving-payment-finance-building-money-house-architecture-government-economy-columns-classic-savings.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Dólar Blue vs USDT</h3>
           <p class="comparison-subtitle">Compará cuál te conviene más para comprar o vender</p>
         </div>
 
         <div class="comparison-rates">
           <div class="rate-box blue-rate">
             <div class="rate-box-header">
-              <span class="rate-icon">🏦</span>
+              <span class="rate-icon"></span>
               <span class="rate-title">Dólar Blue</span>
             </div>
             <div class="rate-box-prices">
@@ -315,41 +315,41 @@
         </div>
 
         <div class="comparison-info">
-          <p>💡 <strong>Tip:</strong> Los precios del dólar blue pueden variar según la casa de cambio. Esta comparación usa promedios del mercado.</p>
+          <p><strong>Tip:</strong> Los precios del dólar blue pueden variar según la casa de cambio. Esta comparación usa promedios del mercado.</p>
         </div>
       </div>
 
       <!-- Sección de Educación y Tips -->
       <div class="education-card">
         <div class="education-header">
-          <h3>📚 Educación y Consejos</h3>
+          <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Work Education/Book Reading--learning-book-reading-finger-hand-openbook-literature-study-education-knowledge-flip-page-learn.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Educación y Consejos</h3>
           <p class="education-subtitle">Tips esenciales para operar con criptomonedas de forma segura</p>
         </div>
 
         <div class="tips-grid">
           <div class="tip-card">
-            <div class="tip-icon">🔐</div>
+            <div class="tip-icon"></div>
             <h4>Seguridad Primero</h4>
             <p>Nunca compartas tus claves privadas, seeds o contraseñas. Usá autenticación de dos factores (2FA) en todos tus exchanges.</p>
             <div class="tip-badge security">Esencial</div>
           </div>
 
           <div class="tip-card">
-            <div class="tip-icon">💰</div>
+            <div class="tip-icon"></div>
             <h4>P2P vs Exchanges</h4>
             <p>El P2P suele tener mejor precio que comprar directo en exchanges. Verificá siempre la reputación del vendedor antes de operar.</p>
             <div class="tip-badge info">Ahorro</div>
           </div>
 
           <div class="tip-card">
-            <div class="tip-icon">⚠️</div>
+            <div class="tip-icon"></div>
             <h4>Spread y Comisiones</h4>
             <p>Considerá el spread (diferencia entre compra/venta) y las comisiones de red al calcular tu ganancia real. No todas las plataformas son iguales.</p>
             <div class="tip-badge warning">Importante</div>
           </div>
 
           <div class="tip-card">
-            <div class="tip-icon">🏦</div>
+            <div class="tip-icon"></div>
             <h4>Wallets vs Exchanges</h4>
             <p>Para montos grandes, transferí a una wallet personal (hardware wallet es lo más seguro). "Not your keys, not your crypto".</p>
             <div class="tip-badge security">Seguridad</div>
@@ -357,28 +357,28 @@
 
           <!-- Tips adicionales (ocultos por defecto) -->
           <div class="tip-card extra-tip" style="display: none;">
-            <div class="tip-icon">📊</div>
+            <div class="tip-icon"></div>
             <h4>Volatilidad</h4>
             <p>El precio del USDT puede variar varios pesos en minutos. Configurá alertas para aprovechar los mejores momentos para comprar o vender.</p>
             <div class="tip-badge info">Trading</div>
           </div>
 
           <div class="tip-card extra-tip" style="display: none;">
-            <div class="tip-icon">🎯</div>
+            <div class="tip-icon"></div>
             <h4>Diversificación</h4>
             <p>No pongas todos tus ahorros en cripto. Diversificá tus inversiones y solo invertí lo que estés dispuesto a perder.</p>
             <div class="tip-badge warning">Riesgo</div>
           </div>
 
           <div class="tip-card extra-tip" style="display: none;">
-            <div class="tip-icon">🔍</div>
+            <div class="tip-icon"></div>
             <h4>Verifica Antes de Enviar</h4>
             <p>Siempre verificá la dirección de wallet antes de enviar. Las transacciones de cripto son irreversibles.</p>
             <div class="tip-badge security">Crítico</div>
           </div>
 
           <div class="tip-card extra-tip" style="display: none;">
-            <div class="tip-icon">💡</div>
+            <div class="tip-icon"></div>
             <h4>Red y Gas Fees</h4>
             <p>Para USDT, la red TRC20 (Tron) tiene comisiones más baratas que ERC20 (Ethereum). Elegí según tu necesidad.</p>
             <div class="tip-badge info">Ahorro</div>
@@ -396,7 +396,7 @@
 
         <div class="education-footer">
           <div class="education-cta">
-            <span class="cta-icon">💬</span>
+            <span class="cta-icon"></span>
             <div class="cta-content">
               <strong>¿Primera vez operando?</strong>
               <p>Empezá con montos pequeños hasta que te familiarices con el proceso</p>
@@ -408,7 +408,7 @@
       <!-- Calculadora de Rendimientos -->
       <div class="yield-card">
         <div class="yield-header">
-          <h3>📈 Calculadora de Rendimientos</h3>
+          <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Money Shopping/Calculator 1--calculator-shopping-shop-store-cash-calculate-math-payment-cashier-machine-digital-arithmetic-device-electionic-numbers-buttons-technology.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Calculadora de Rendimientos</h3>
           <p class="yield-subtitle">Compará cuánto rinde tu dinero: USDT vs Plazo Fijo vs Pesos</p>
         </div>
 
@@ -439,28 +439,28 @@
             <div class="assumption-item">
               <label for="inflationRate">Inflación mensual estimada (%)</label>
               <input type="number" id="inflationRate" value="8.5" step="0.1" min="0">
-              <span class="assumption-hint">🤖 Actualizado automáticamente (editable)</span>
+              <span class="assumption-hint">Actualizado automáticamente (editable)</span>
             </div>
             <div class="assumption-item">
               <label for="fixedRate">Tasa plazo fijo anual (%)</label>
               <input type="number" id="fixedRate" value="110" step="1" min="0">
-              <span class="assumption-hint">🤖 Actualizado automáticamente (editable)</span>
+              <span class="assumption-hint">Actualizado automáticamente (editable)</span>
             </div>
             <div class="assumption-item">
               <label for="usdtVariation">Variación USDT mensual (%)</label>
               <input type="number" id="usdtVariation" value="7" step="0.1">
-              <span class="assumption-hint">🤖 Calculado del historial (editable)</span>
+              <span class="assumption-hint">Calculado del historial (editable)</span>
             </div>
           </div>
 
           <button class="btn-calculate-yield" id="btnCalculateYield">
-            🧮 Calcular Rendimientos
+            Calcular Rendimientos
           </button>
         </div>
 
         <div class="yield-results" id="yieldResults" style="display: none;">
           <div class="yield-explanation">
-            <h4>📘 Cómo leer los resultados:</h4>
+            <h4>Cómo leer los resultados:</h4>
             <div class="explanation-grid">
               <div class="explanation-item">
                 <strong>Valor en pesos:</strong> El número grande es cuántos pesos tendrías al final del período.
@@ -476,7 +476,7 @@
 
           <div class="yield-comparison">
             <div class="yield-option best" id="yieldBest">
-              <div class="yield-badge">🏆 Mejor Opción</div>
+              <div class="yield-badge">✓ Mejor Opción</div>
               <div class="yield-option-title" id="bestYieldTitle">USDT</div>
               <div class="yield-final-amount" id="bestYieldAmount">$ 0</div>
               <div class="yield-profit" id="bestYieldProfit">Ganancia: $ 0</div>
@@ -511,7 +511,7 @@
       <!-- Calculadora de Comisiones -->
       <div class="commission-card" id="commissionCard" style="display: none;">
         <div class="commission-header">
-          <h3>💰 Desglose de Comisiones</h3>
+          <h3 style="display: flex; align-items: center; gap: 0.5rem;"><img src="/UI_iconos/core-line-free/Money Shopping/Calculator 2--calculator-shopping-shop-store-cash-calculate-math-payment-cashier-money-addition-subtraction-multiplication-division-arithmetic-calculation-values-numbers.svg" width="20" height="20" alt="" style="opacity: 0.8;"> Desglose de Comisiones</h3>
           <p class="commission-subtitle">Entendé el costo real de tu operación</p>
         </div>
         
