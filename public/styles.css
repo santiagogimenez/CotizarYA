@@ -1379,6 +1379,475 @@ main {
   line-height: 1.5;
 }
 
+/* Education Card */
+.education-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.education-header {
+  margin-bottom: 28px;
+}
+
+.education-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.education-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.tip-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: var(--accent);
+}
+
+.tip-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.tip-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.tip-card p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.tip-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tip-badge.security {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.tip-badge.info {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--accent);
+}
+
+.tip-badge.warning {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.education-footer {
+  margin-top: 28px;
+}
+
+.education-cta {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cta-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.cta-content strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cta-content p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cta-content p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tips-toggle-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.btn-toggle-tips {
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-toggle-tips:hover {
+  border-color: var(--accent);
+  background: rgba(0, 212, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.btn-toggle-tips .toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.btn-toggle-tips.expanded .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.extra-tip {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Yield Calculator */
+.yield-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.yield-header {
+  margin-bottom: 24px;
+}
+
+.yield-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.yield-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.yield-inputs {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.yield-input-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.yield-input-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.yield-input-group input,
+.yield-input-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.yield-input-group input:focus,
+.yield-input-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.yield-assumptions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.assumption-item label {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.assumption-item input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.assumption-hint {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.btn-calculate-yield {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--accent) 0%, #00a8cc 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.btn-calculate-yield:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+}
+
+.yield-results {
+  animation: slideIn 0.4s ease;
+}
+
+.yield-comparison {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.yield-option {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  min-width: 0;
+}
+
+.yield-option.best {
+  border-color: var(--success);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 100%);
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+}
+
+.yield-option.worst {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0) 100%);
+}
+
+.yield-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--success);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.yield-option-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.yield-final-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Courier New', monospace;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.yield-option.best .yield-final-amount {
+  color: var(--success);
+}
+
+.yield-option.worst .yield-final-amount {
+  color: #ef4444;
+}
+
+.yield-explanation {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.yield-explanation h4 {
+  margin: 0 0 16px 0;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.explanation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.explanation-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.explanation-item strong {
+  display: block;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-size: 0.9375rem;
+}
+
+.explanation-item em {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.yield-profit {
+  font-size: 0.9375rem;
+  color: var(--success);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.yield-profit.loss {
+  color: #ef4444;
+}
+
+.yield-percentage {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--success);
+  font-family: 'Courier New', monospace;
+}
+
+.yield-percentage.loss {
+  color: #ef4444;
+}
+
+.yield-summary {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.yield-summary p {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.yield-disclaimer {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.yield-disclaimer p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -1687,6 +2156,66 @@ footer strong {
     padding: 12px;
   }
 
+  /* Education Card Responsive */
+  .education-card {
+    padding: 20px 16px;
+  }
+
+  .tips-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tip-card {
+    padding: 20px;
+  }
+
+  .tip-icon {
+    font-size: 1.75rem;
+  }
+
+  .education-cta {
+    padding: 16px 18px;
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .cta-icon {
+    font-size: 2.5rem;
+  }
+
+  /* Yield Calculator Responsive */
+  .yield-card {
+    padding: 20px 16px;
+  }
+
+  .yield-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .yield-assumptions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .yield-comparison {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .yield-option.best {
+    transform: scale(1);
+  }
+
+  .yield-final-amount {
+    font-size: 1.5rem;
+  }
+
+  .yield-percentage {
+    font-size: 1rem;
+  }
+
   .platforms-card {
     padding: 20px 16px;
   }
@@ -1911,6 +2440,19 @@ footer strong {
   .footer-note,
   .footer-brand {
     font-size: 0.6875rem;
+  }
+
+  .yield-explanation {
+    margin-bottom: 16px;
+  }
+
+  .explanation-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .explanation-item {
+    font-size: 0.8rem;
   }
 }
 

@@ -71,6 +71,7 @@ async function init() {
   setupPeriodSelector();
   startAutoRefresh();
   startPlatformsAutoRefresh();
+  updateYieldDefaults(); // Actualizar valores automáticos de rendimientos
 }
 
 // Gestión del tema oscuro
@@ -260,6 +261,191 @@ function setupEventListeners() {
       addAlert();
     }
   });
+
+  // Toggle tips educativos
+  const btnToggleTips = document.getElementById('btnToggleTips');
+  if (btnToggleTips) {
+    btnToggleTips.addEventListener('click', toggleEducationTips);
+  }
+
+  // Calculadora de rendimientos
+  const btnCalculateYield = document.getElementById('btnCalculateYield');
+  if (btnCalculateYield) {
+    btnCalculateYield.addEventListener('click', calculateYield);
+  }
+
+  // Formatear números con separador de miles
+  const yieldAmountInput = document.getElementById('yieldAmount');
+  if (yieldAmountInput) {
+    yieldAmountInput.addEventListener('input', function(e) {
+      // Guardar posición del cursor
+      let cursorPos = e.target.selectionStart;
+      let oldLength = e.target.value.length;
+      
+      // Remover todo excepto números
+      let value = e.target.value.replace(/\D/g, '');
+      
+      if (value) {
+        // Formatear con separador de miles
+        let formatted = parseInt(value).toLocaleString('es-AR');
+        e.target.value = formatted;
+        
+        // Ajustar cursor
+        let newLength = formatted.length;
+        let diff = newLength - oldLength;
+        e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+      } else {
+        e.target.value = '';
+      }
+    });
+  }
+}
+
+function toggleEducationTips() {
+  const extraTips = document.querySelectorAll('.extra-tip');
+  const btn = document.getElementById('btnToggleTips');
+  const toggleText = btn.querySelector('.toggle-text');
+  const isExpanded = btn.classList.contains('expanded');
+  
+  if (isExpanded) {
+    // Colapsar
+    extraTips.forEach(tip => {
+      tip.style.display = 'none';
+    });
+    btn.classList.remove('expanded');
+    toggleText.textContent = 'Ver más consejos';
+  } else {
+    // Expandir
+    extraTips.forEach((tip, index) => {
+      tip.style.display = 'block';
+      tip.style.animationDelay = `${index * 0.1}s`;
+    });
+    btn.classList.add('expanded');
+    toggleText.textContent = 'Ver menos consejos';
+  }
+}
+
+// Calcular variación promedio mensual del USDT basada en historial
+function calculateUsdtMonthlyVariation() {
+  if (priceHistory.length < 2) return 7; // Default si no hay datos
+  
+  // Obtener el precio más antiguo y más reciente
+  const oldestPrice = priceHistory[0].price;
+  const newestPrice = priceHistory[priceHistory.length - 1].price;
+  
+  // Calcular el tiempo transcurrido en días
+  const oldestTime = new Date(priceHistory[0].timestamp);
+  const newestTime = new Date(priceHistory[priceHistory.length - 1].timestamp);
+  const daysDiff = (newestTime - oldestTime) / (1000 * 60 * 60 * 24);
+  
+  if (daysDiff < 1) return 7; // Muy pocos datos
+  
+  // Calcular variación total y convertirla a mensual
+  const totalVariation = ((newestPrice - oldestPrice) / oldestPrice);
+  const monthlyVariation = (totalVariation / daysDiff) * 30 * 100; // En porcentaje
+  
+  return Math.max(0, Math.min(20, monthlyVariation)); // Entre 0% y 20%
+}
+
+// Actualizar valores automáticos de la calculadora de rendimientos
+function updateYieldDefaults() {
+  const usdtVariation = calculateUsdtMonthlyVariation();
+  document.getElementById('usdtVariation').value = usdtVariation.toFixed(1);
+  
+  // También podríamos actualizar inflación y tasa, pero por ahora solo USDT
+  console.log(`📊 Variación USDT mensual estimada: ${usdtVariation.toFixed(1)}%`);
+}
+
+// Calculadora de Rendimientos
+function calculateYield() {
+  const amountStr = document.getElementById('yieldAmount').value.replace(/\./g, '');
+  const amount = parseFloat(amountStr);
+  const months = parseInt(document.getElementById('yieldPeriod').value);
+  const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+  const fixedRate = parseFloat(document.getElementById('fixedRate').value) / 100;
+  const usdtVariation = parseFloat(document.getElementById('usdtVariation').value) / 100;
+  
+  if (!amount || amount < 1000) {
+    showStatusMessage('Ingresá un monto válido (mínimo $1.000)', 'error');
+    return;
+  }
+  
+  // Calcular cada opción
+  
+  // 1. Mantener en pesos (pierde por inflación)
+  const inflationMultiplier = Math.pow(1 + inflationRate, months);
+  const realValuePesos = amount / inflationMultiplier;
+  const lossPesos = amount - realValuePesos;
+  const percentPesos = ((realValuePesos - amount) / amount) * 100;
+  
+  // 2. Plazo fijo (gana interés pero pierde contra inflación)
+  const finalAmountFixed = amount * Math.pow(1 + fixedRate, months / 12);
+  const realValueFixed = finalAmountFixed / inflationMultiplier;
+  const profitFixed = realValueFixed - amount;
+  const percentFixed = ((realValueFixed - amount) / amount) * 100;
+  
+  // 3. USDT (sube con el dólar)
+  const usdAmount = amount / currentRate;
+  const finalUsdtRate = currentRate * Math.pow(1 + usdtVariation, months);
+  const finalAmountUsdt = usdAmount * finalUsdtRate;
+  const realValueUsdt = finalAmountUsdt / inflationMultiplier;
+  const profitUsdt = realValueUsdt - amount;
+  const percentUsdt = ((realValueUsdt - amount) / amount) * 100;
+  
+  // Ordenar por rendimiento
+  const options = [
+    { name: 'USDT', amount: realValueUsdt, profit: profitUsdt, percent: percentUsdt, nominal: finalAmountUsdt },
+    { name: 'Plazo Fijo', amount: realValueFixed, profit: profitFixed, percent: percentFixed, nominal: finalAmountFixed },
+    { name: 'Pesos (sin invertir)', amount: realValuePesos, profit: -lossPesos, percent: percentPesos, nominal: amount }
+  ];
+  
+  options.sort((a, b) => b.amount - a.amount);
+  
+  // Mostrar resultados
+  const resultsDiv = document.getElementById('yieldResults');
+  resultsDiv.style.display = 'block';
+  
+  // Mejor opción
+  document.getElementById('bestYieldTitle').textContent = options[0].name;
+  document.getElementById('bestYieldAmount').textContent = `$${formatNumber(options[0].nominal, 0)}`;
+  
+  if (options[0].profit >= 0) {
+    document.getElementById('bestYieldProfit').textContent = `Ganancia real: $${formatNumber(options[0].profit, 0)}`;
+  } else {
+    document.getElementById('bestYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[0].profit), 0)}`;
+  }
+  document.getElementById('bestYieldPercent').textContent = `${options[0].percent >= 0 ? '+' : ''}${options[0].percent.toFixed(1)}%`;
+  
+  // Segunda opción
+  document.getElementById('secondYieldTitle').textContent = options[1].name;
+  document.getElementById('secondYieldAmount').textContent = `$${formatNumber(options[1].nominal, 0)}`;
+  
+  if (options[1].profit >= 0) {
+    document.getElementById('secondYieldProfit').textContent = `Ganancia real: $${formatNumber(options[1].profit, 0)}`;
+  } else {
+    document.getElementById('secondYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[1].profit), 0)}`;
+  }
+  document.getElementById('secondYieldPercent').textContent = `${options[1].percent >= 0 ? '+' : ''}${options[1].percent.toFixed(1)}%`;
+  
+  // Peor opción
+  document.getElementById('worstYieldTitle').textContent = options[2].name;
+  document.getElementById('worstYieldAmount').textContent = `$${formatNumber(options[2].nominal, 0)}`;
+  
+  if (options[2].profit >= 0) {
+    document.getElementById('worstYieldProfit').textContent = `Ganancia real: $${formatNumber(options[2].profit, 0)}`;
+  } else {
+    document.getElementById('worstYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[2].profit), 0)}`;
+  }
+  document.getElementById('worstYieldPercent').textContent = `${options[2].percent >= 0 ? '+' : ''}${options[2].percent.toFixed(1)}%`;
+  
+  // Conclusión
+  const difference = options[0].profit - options[2].profit;
+  const monthText = months === 1 ? 'mes' : months === 12 ? 'año' : `${months} meses`;
+  document.getElementById('yieldConclusion').textContent = 
+    `En ${monthText}, ${options[0].name} te daría $${formatNumber(difference, 0)} más que ${options[2].name} (poder adquisitivo real).`;
+  
+  // Scroll suave a resultados
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // Auto-refresh cada 30 segundos
@@ -1098,8 +1284,9 @@ function setupChartInteractivity(points) {
 function formatNumber(num, decimals = 2) {
   return new Intl.NumberFormat('es-AR', {
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  }).format(num);
+    maximumFractionDigits: decimals,
+    useGrouping: true
+  }).format(Math.round(num));
 }
 
 // Formatear timestamp

@@ -310,6 +310,195 @@
         </div>
       </div>
 
+      <!-- Sección de Educación y Tips -->
+      <div class="education-card">
+        <div class="education-header">
+          <h3>📚 Educación y Consejos</h3>
+          <p class="education-subtitle">Tips esenciales para operar con criptomonedas de forma segura</p>
+        </div>
+
+        <div class="tips-grid">
+          <div class="tip-card">
+            <div class="tip-icon">🔐</div>
+            <h4>Seguridad Primero</h4>
+            <p>Nunca compartas tus claves privadas, seeds o contraseñas. Usá autenticación de dos factores (2FA) en todos tus exchanges.</p>
+            <div class="tip-badge security">Esencial</div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">💰</div>
+            <h4>P2P vs Exchanges</h4>
+            <p>El P2P suele tener mejor precio que comprar directo en exchanges. Verificá siempre la reputación del vendedor antes de operar.</p>
+            <div class="tip-badge info">Ahorro</div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">⚠️</div>
+            <h4>Spread y Comisiones</h4>
+            <p>Considerá el spread (diferencia entre compra/venta) y las comisiones de red al calcular tu ganancia real. No todas las plataformas son iguales.</p>
+            <div class="tip-badge warning">Importante</div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon">🏦</div>
+            <h4>Wallets vs Exchanges</h4>
+            <p>Para montos grandes, transferí a una wallet personal (hardware wallet es lo más seguro). "Not your keys, not your crypto".</p>
+            <div class="tip-badge security">Seguridad</div>
+          </div>
+
+          <!-- Tips adicionales (ocultos por defecto) -->
+          <div class="tip-card extra-tip" style="display: none;">
+            <div class="tip-icon">📊</div>
+            <h4>Volatilidad</h4>
+            <p>El precio del USDT puede variar varios pesos en minutos. Configurá alertas para aprovechar los mejores momentos para comprar o vender.</p>
+            <div class="tip-badge info">Trading</div>
+          </div>
+
+          <div class="tip-card extra-tip" style="display: none;">
+            <div class="tip-icon">🎯</div>
+            <h4>Diversificación</h4>
+            <p>No pongas todos tus ahorros en cripto. Diversificá tus inversiones y solo invertí lo que estés dispuesto a perder.</p>
+            <div class="tip-badge warning">Riesgo</div>
+          </div>
+
+          <div class="tip-card extra-tip" style="display: none;">
+            <div class="tip-icon">🔍</div>
+            <h4>Verifica Antes de Enviar</h4>
+            <p>Siempre verificá la dirección de wallet antes de enviar. Las transacciones de cripto son irreversibles.</p>
+            <div class="tip-badge security">Crítico</div>
+          </div>
+
+          <div class="tip-card extra-tip" style="display: none;">
+            <div class="tip-icon">💡</div>
+            <h4>Red y Gas Fees</h4>
+            <p>Para USDT, la red TRC20 (Tron) tiene comisiones más baratas que ERC20 (Ethereum). Elegí según tu necesidad.</p>
+            <div class="tip-badge info">Ahorro</div>
+          </div>
+        </div>
+
+        <div class="tips-toggle-container">
+          <button class="btn-toggle-tips" id="btnToggleTips">
+            <span class="toggle-text">Ver más consejos</span>
+            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div class="education-footer">
+          <div class="education-cta">
+            <span class="cta-icon">💬</span>
+            <div class="cta-content">
+              <strong>¿Primera vez operando?</strong>
+              <p>Empezá con montos pequeños hasta que te familiarices con el proceso</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculadora de Rendimientos -->
+      <div class="yield-card">
+        <div class="yield-header">
+          <h3>📈 Calculadora de Rendimientos</h3>
+          <p class="yield-subtitle">Compará cuánto rinde tu dinero: USDT vs Plazo Fijo vs Pesos</p>
+        </div>
+
+        <div class="yield-inputs">
+          <div class="yield-input-row">
+            <div class="yield-input-group">
+              <label for="yieldAmount">Monto inicial (ARS)</label>
+              <input 
+                type="text" 
+                id="yieldAmount" 
+                placeholder="Ej: 100.000"
+                inputmode="numeric"
+              >
+            </div>
+
+            <div class="yield-input-group">
+              <label for="yieldPeriod">Período (meses)</label>
+              <select id="yieldPeriod">
+                <option value="3">3 meses</option>
+                <option value="6" selected>6 meses</option>
+                <option value="12">1 año</option>
+                <option value="24">2 años</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="yield-assumptions">
+            <div class="assumption-item">
+              <label for="inflationRate">Inflación mensual estimada (%)</label>
+              <input type="number" id="inflationRate" value="8.5" step="0.1" min="0">
+              <span class="assumption-hint">💡 Valor editable manualmente</span>
+            </div>
+            <div class="assumption-item">
+              <label for="fixedRate">Tasa plazo fijo anual (%)</label>
+              <input type="number" id="fixedRate" value="110" step="1" min="0">
+              <span class="assumption-hint">💡 Valor editable manualmente</span>
+            </div>
+            <div class="assumption-item">
+              <label for="usdtVariation">Variación USDT mensual (%)</label>
+              <input type="number" id="usdtVariation" value="7" step="0.1">
+              <span class="assumption-hint">🤖 Calculado automáticamente (editable)</span>
+            </div>
+          </div>
+
+          <button class="btn-calculate-yield" id="btnCalculateYield">
+            🧮 Calcular Rendimientos
+          </button>
+        </div>
+
+        <div class="yield-results" id="yieldResults" style="display: none;">
+          <div class="yield-explanation">
+            <h4>📘 Cómo leer los resultados:</h4>
+            <div class="explanation-grid">
+              <div class="explanation-item">
+                <strong>Valor en pesos:</strong> El número grande es cuántos pesos tendrías al final del período.
+              </div>
+              <div class="explanation-item">
+                <strong>Ganancia/Pérdida real:</strong> Es tu ganancia o pérdida <em>ajustada por inflación</em>. Si es positiva (+), tu dinero compra más. Si es negativa (-), compra menos.
+              </div>
+              <div class="explanation-item">
+                <strong>Porcentaje:</strong> Si es <span style="color: #4ade80;">+X%</span> = estás ganando poder de compra. Si es <span style="color: #ef4444;">-X%</span> = estás perdiendo poder de compra.
+              </div>
+            </div>
+          </div>
+
+          <div class="yield-comparison">
+            <div class="yield-option best" id="yieldBest">
+              <div class="yield-badge">🏆 Mejor Opción</div>
+              <div class="yield-option-title" id="bestYieldTitle">USDT</div>
+              <div class="yield-final-amount" id="bestYieldAmount">$ 0</div>
+              <div class="yield-profit" id="bestYieldProfit">Ganancia: $ 0</div>
+              <div class="yield-percentage" id="bestYieldPercent">+0%</div>
+            </div>
+
+            <div class="yield-option" id="yieldSecond">
+              <div class="yield-option-title" id="secondYieldTitle">Plazo Fijo</div>
+              <div class="yield-final-amount" id="secondYieldAmount">$ 0</div>
+              <div class="yield-profit" id="secondYieldProfit">Ganancia: $ 0</div>
+              <div class="yield-percentage" id="secondYieldPercent">+0%</div>
+            </div>
+
+            <div class="yield-option worst" id="yieldWorst">
+              <div class="yield-option-title" id="worstYieldTitle">Pesos (sin invertir)</div>
+              <div class="yield-final-amount" id="worstYieldAmount">$ 0</div>
+              <div class="yield-profit loss" id="worstYieldProfit">Pérdida: $ 0</div>
+              <div class="yield-percentage loss" id="worstYieldPercent">-0%</div>
+            </div>
+          </div>
+
+          <div class="yield-summary">
+            <p><strong>Conclusión:</strong> <span id="yieldConclusion">Invertir en USDT te daría $X más que dejarlo en pesos.</span></p>
+          </div>
+
+          <div class="yield-disclaimer">
+            <p>⚠️ Estos cálculos son estimaciones basadas en datos históricos y supuestos. Los resultados reales pueden variar.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Calculadora de Comisiones -->
       <div class="commission-card" id="commissionCard" style="display: none;">
         <div class="commission-header">
