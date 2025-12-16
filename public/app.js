@@ -5,6 +5,7 @@ let platformsAutoRefreshInterval = null;
 let alerts = [];
 let priceHistory = [];
 let currentPeriod = '1h';
+let currentMode = 'seller'; // 'seller' o 'user'
 
 // Elementos del DOM
 const elements = {
@@ -16,6 +17,7 @@ const elements = {
   markup: document.getElementById('markup'),
   rounding: document.getElementById('rounding'),
   resultValue: document.getElementById('resultValue'),
+  resultLabel: document.getElementById('resultLabel'),
   btnCopy: document.getElementById('btnCopy'),
   statusMessage: document.getElementById('statusMessage'),
   themeToggle: document.getElementById('themeToggle'),
@@ -52,7 +54,10 @@ const elements = {
   alternativeOption: document.getElementById('alternativeOption'),
   alternativePrice: document.getElementById('alternativePrice'),
   alternativeDetail: document.getElementById('alternativeDetail'),
-  comparisonDifference: document.getElementById('comparisonDifference')
+  comparisonDifference: document.getElementById('comparisonDifference'),
+  btnModeSeller: document.getElementById('btnModeSeller'),
+  btnModeUser: document.getElementById('btnModeUser'),
+  markupGroup: document.getElementById('markupGroup')
 };
 
 // Variables globales para cotizaciones
@@ -85,6 +90,28 @@ function toggleTheme() {
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
+}
+
+// Cambiar entre modo vendedor y usuario final
+function switchMode(mode) {
+  currentMode = mode;
+  
+  // Actualizar botones
+  elements.btnModeSeller.classList.toggle('active', mode === 'seller');
+  elements.btnModeUser.classList.toggle('active', mode === 'user');
+  
+  // Mostrar/ocultar campo de markup
+  if (mode === 'user') {
+    elements.markupGroup.classList.add('hidden');
+    elements.markup.value = '0';
+    elements.resultLabel.textContent = 'Precio sin markup';
+  } else {
+    elements.markupGroup.classList.remove('hidden');
+    elements.resultLabel.textContent = 'Precio final';
+  }
+  
+  // Recalcular precio
+  calculatePrice();
 }
 
 // Obtener la cotización desde el backend
@@ -247,6 +274,10 @@ function setupEventListeners() {
   elements.markup.addEventListener('input', calculatePrice);
   elements.rounding.addEventListener('change', calculatePrice);
   elements.comparisonAmount.addEventListener('input', calculateComparison);
+
+  // Mode toggles
+  elements.btnModeSeller.addEventListener('click', () => switchMode('seller'));
+  elements.btnModeUser.addEventListener('click', () => switchMode('user'));
 
   // Calcular al presionar Enter
   elements.usdtAmount.addEventListener('keypress', (e) => {

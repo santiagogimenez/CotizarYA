@@ -247,6 +247,47 @@ main {
   box-shadow: var(--shadow-sm);
 }
 
+.mode-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  background: var(--bg-secondary);
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+
+.markup-group {
+  transition: all 0.3s ease;
+}
+
+.markup-group.hidden {
+  display: none;
+}
+
 .form-group {
   margin-bottom: 24px;
 }

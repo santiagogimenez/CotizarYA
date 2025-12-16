@@ -43,6 +43,15 @@
       </div>
 
       <div class="calculator-card">
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="seller" id="btnModeSeller">
+            💼 Modo Vendedor
+          </button>
+          <button class="mode-btn" data-mode="user" id="btnModeUser">
+            👤 Modo Usuario Final
+          </button>
+        </div>
+
         <div class="form-group">
           <label for="usdtAmount">Monto en USDT</label>
           <input 
@@ -55,7 +64,7 @@
           >
         </div>
 
-        <div class="form-group">
+        <div class="form-group markup-group" id="markupGroup">
           <label for="markup">Recargo / Markup (%)</label>
           <input 
             type="number" 
@@ -80,7 +89,7 @@
         </div>
 
         <div class="result-card">
-          <div class="result-label">Precio final</div>
+          <div class="result-label" id="resultLabel">Precio final</div>
           <div class="result-value" id="resultValue">$ 0</div>
           <button class="btn-copy" id="btnCopy">Copiar precio</button>
         </div>
