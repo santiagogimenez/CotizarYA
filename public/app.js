@@ -348,12 +348,32 @@ function calculateUsdtMonthlyVariation() {
 }
 
 // Actualizar valores automáticos de la calculadora de rendimientos
-function updateYieldDefaults() {
-  const usdtVariation = calculateUsdtMonthlyVariation();
-  document.getElementById('usdtVariation').value = usdtVariation.toFixed(1);
-  
-  // También podríamos actualizar inflación y tasa, pero por ahora solo USDT
-  console.log(`📊 Variación USDT mensual estimada: ${usdtVariation.toFixed(1)}%`);
+async function updateYieldDefaults() {
+  try {
+    // Calcular variación USDT del historial
+    const usdtVariation = calculateUsdtMonthlyVariation();
+    document.getElementById('usdtVariation').value = usdtVariation.toFixed(1);
+    
+    // Obtener datos económicos de la API
+    const response = await fetch('/api/economic-data');
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Actualizar inflación
+      document.getElementById('inflationRate').value = data.inflation.monthly.toFixed(1);
+      
+      // Actualizar tasa plazo fijo
+      document.getElementById('fixedRate').value = data.fixedDeposit.annualRate;
+      
+      console.log(`📊 Datos económicos actualizados:`);
+      console.log(`   - Inflación mensual: ${data.inflation.monthly}%`);
+      console.log(`   - Tasa plazo fijo: ${data.fixedDeposit.annualRate}%`);
+      console.log(`   - Variación USDT: ${usdtVariation.toFixed(1)}%`);
+    }
+  } catch (error) {
+    console.error('Error al actualizar datos económicos:', error);
+    // Mantener valores por defecto si falla
+  }
 }
 
 // Calculadora de Rendimientos
@@ -409,40 +429,77 @@ function calculateYield() {
   document.getElementById('bestYieldTitle').textContent = options[0].name;
   document.getElementById('bestYieldAmount').textContent = `$${formatNumber(options[0].nominal, 0)}`;
   
+  const bestProfitEl = document.getElementById('bestYieldProfit');
+  const bestPercentEl = document.getElementById('bestYieldPercent');
+  
   if (options[0].profit >= 0) {
-    document.getElementById('bestYieldProfit').textContent = `Ganancia real: $${formatNumber(options[0].profit, 0)}`;
+    bestProfitEl.textContent = `Ganancia real: $${formatNumber(options[0].profit, 0)}`;
+    bestProfitEl.classList.remove('loss');
+    bestPercentEl.classList.remove('loss');
   } else {
-    document.getElementById('bestYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[0].profit), 0)}`;
+    bestProfitEl.textContent = `Pérdida real: $${formatNumber(Math.abs(options[0].profit), 0)}`;
+    bestProfitEl.classList.add('loss');
+    bestPercentEl.classList.add('loss');
   }
-  document.getElementById('bestYieldPercent').textContent = `${options[0].percent >= 0 ? '+' : ''}${options[0].percent.toFixed(1)}%`;
+  bestPercentEl.textContent = `${options[0].percent >= 0 ? '+' : ''}${options[0].percent.toFixed(1)}%`;
   
   // Segunda opción
   document.getElementById('secondYieldTitle').textContent = options[1].name;
   document.getElementById('secondYieldAmount').textContent = `$${formatNumber(options[1].nominal, 0)}`;
   
+  const secondProfitEl = document.getElementById('secondYieldProfit');
+  const secondPercentEl = document.getElementById('secondYieldPercent');
+  
   if (options[1].profit >= 0) {
-    document.getElementById('secondYieldProfit').textContent = `Ganancia real: $${formatNumber(options[1].profit, 0)}`;
+    secondProfitEl.textContent = `Ganancia real: $${formatNumber(options[1].profit, 0)}`;
+    secondProfitEl.classList.remove('loss');
+    secondPercentEl.classList.remove('loss');
   } else {
-    document.getElementById('secondYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[1].profit), 0)}`;
+    secondProfitEl.textContent = `Pérdida real: $${formatNumber(Math.abs(options[1].profit), 0)}`;
+    secondProfitEl.classList.add('loss');
+    secondPercentEl.classList.add('loss');
   }
-  document.getElementById('secondYieldPercent').textContent = `${options[1].percent >= 0 ? '+' : ''}${options[1].percent.toFixed(1)}%`;
+  secondPercentEl.textContent = `${options[1].percent >= 0 ? '+' : ''}${options[1].percent.toFixed(1)}%`;
   
   // Peor opción
   document.getElementById('worstYieldTitle').textContent = options[2].name;
   document.getElementById('worstYieldAmount').textContent = `$${formatNumber(options[2].nominal, 0)}`;
   
-  if (options[2].profit >= 0) {
-    document.getElementById('worstYieldProfit').textContent = `Ganancia real: $${formatNumber(options[2].profit, 0)}`;
-  } else {
-    document.getElementById('worstYieldProfit').textContent = `Pérdida real: $${formatNumber(Math.abs(options[2].profit), 0)}`;
-  }
-  document.getElementById('worstYieldPercent').textContent = `${options[2].percent >= 0 ? '+' : ''}${options[2].percent.toFixed(1)}%`;
+  const worstProfitEl = document.getElementById('worstYieldProfit');
+  const worstPercentEl = document.getElementById('worstYieldPercent');
   
-  // Conclusión
+  if (options[2].profit >= 0) {
+    worstProfitEl.textContent = `Ganancia real: $${formatNumber(options[2].profit, 0)}`;
+    worstProfitEl.classList.remove('loss');
+    worstPercentEl.classList.remove('loss');
+  } else {
+    worstProfitEl.textContent = `Pérdida real: $${formatNumber(Math.abs(options[2].profit), 0)}`;
+    worstProfitEl.classList.add('loss');
+    worstPercentEl.classList.add('loss');
+  }
+  worstPercentEl.textContent = `${options[2].percent >= 0 ? '+' : ''}${options[2].percent.toFixed(1)}%`;
+  
+  // Conclusión mejorada
   const difference = options[0].profit - options[2].profit;
   const monthText = months === 1 ? 'mes' : months === 12 ? 'año' : `${months} meses`;
-  document.getElementById('yieldConclusion').textContent = 
-    `En ${monthText}, ${options[0].name} te daría $${formatNumber(difference, 0)} más que ${options[2].name} (poder adquisitivo real).`;
+  
+  let conclusionText = `En ${monthText}, eligiendo ${options[0].name} en lugar de dejar tu dinero en ${options[2].name}:`;
+  
+  if (options[0].profit >= 0) {
+    // Mejor opción gana
+    if (options[2].profit >= 0) {
+      // Ambos ganan, pero uno gana más
+      conclusionText += ` ganarías $${formatNumber(difference, 0)} más de poder adquisitivo.`;
+    } else {
+      // Mejor gana, peor pierde
+      conclusionText += ` ganarías $${formatNumber(options[0].profit, 0)} mientras que con ${options[2].name} perderías $${formatNumber(Math.abs(options[2].profit), 0)}. Diferencia total: $${formatNumber(difference, 0)}.`;
+    }
+  } else {
+    // Mejor opción pierde (pero menos que la peor)
+    conclusionText += ` perderías $${formatNumber(Math.abs(options[0].profit), 0)} en lugar de $${formatNumber(Math.abs(options[2].profit), 0)}. Ahorro de pérdida: $${formatNumber(difference, 0)}.`;
+  }
+  
+  document.getElementById('yieldConclusion').textContent = conclusionText;
   
   // Scroll suave a resultados
   resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
