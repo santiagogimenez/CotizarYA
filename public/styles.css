@@ -782,6 +782,10 @@ main {
 .btn-refresh-platforms:hover img {
   filter: brightness(0) saturate(100%) invert(1);
   opacity: 1;
+  transform: rotate(180deg) scale(1.1);
+}
+
+.btn-refresh-platforms:not(.loading):hover img {
   transform: rotate(180deg);
 }
 
@@ -799,7 +803,7 @@ main {
 }
 
 .btn-refresh-platforms.loading img {
-  animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: spin 1s linear infinite;
 }
 
 .platforms-list {
