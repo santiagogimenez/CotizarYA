@@ -729,11 +729,12 @@ main {
 }
 
 .platforms-header h3 {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 4px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .platforms-subtitle {
@@ -984,11 +985,12 @@ main {
 }
 
 .history-header h3 {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .history-subtitle {
@@ -1213,11 +1215,12 @@ main {
 }
 
 .alerts-header h3 {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .alerts-subtitle {
@@ -1588,11 +1591,6 @@ main {
   border-radius: 16px;
   padding: 24px;
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-}
-
-.comparison-card:hover {
-  box-shadow: var(--shadow-xl);
 }
 
 .comparison-header {
@@ -1600,11 +1598,12 @@ main {
 }
 
 .comparison-header h3 {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .comparison-subtitle {
@@ -1859,10 +1858,11 @@ main {
 }
 
 .education-header h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 6px;
+  white-space: nowrap;
 }
 
 .education-subtitle {
@@ -2039,10 +2039,11 @@ main {
 }
 
 .yield-header h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 6px;
+  white-space: nowrap;
 }
 
 .yield-subtitle {
@@ -2327,11 +2328,12 @@ main {
 }
 
 .commission-header h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 6px;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .commission-subtitle {

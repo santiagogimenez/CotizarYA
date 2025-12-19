@@ -7,10 +7,19 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["usdt", "ars", "binance", "p2p", "crypto", "pricing", "argentina"],
+  "keywords": [
+    "usdt",
+    "ars",
+    "binance",
+    "p2p",
+    "crypto",
+    "pricing",
+    "argentina"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
   }
 }
