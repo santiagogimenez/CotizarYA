@@ -689,6 +689,7 @@ main {
   );
   transform: rotate(45deg);
   animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .result-label {
@@ -714,6 +715,10 @@ main {
   z-index: 1;
 }
 
+/* Borde rojo para depuración, se puede quitar luego */
+.btn-copy.debug {
+  border: 3px solid red !important;
+}
 .btn-copy {
   width: auto;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -745,7 +750,8 @@ main {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 0.6s;
 }
-
+  pointer-events: none;
+  animation: shimmer 3s ease-in-out infinite;
 .btn-copy:hover::before {
   left: 100%;
 }
@@ -760,9 +766,19 @@ main {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.btn-copy.copying {
+  background: linear-gradient(135deg, #818cf8 0%, #a5b4fc 100%);
+  color: #fff;
+  box-shadow: 0 0 0 2px #a5b4fc33;
+  transition: background 0.3s, box-shadow 0.3s, color 0.3s;
+}
+
 .btn-copy.success {
   background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   animation: successPulse 0.4s ease-out;
+  color: #fff;
+  box-shadow: 0 0 0 2px #10b98155;
+  transition: background 0.3s, box-shadow 0.3s, color 0.3s;
 }
 
 @keyframes successPulse {

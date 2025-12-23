@@ -240,21 +240,38 @@ function updateCommissionBreakdown(data) {
 
 // Copiar precio al portapapeles
 async function copyToClipboard() {
-  const priceText = elements.resultValue.textContent.replace('$ ', '').replace(/\./g, '');
-  
-  try {
-    await navigator.clipboard.writeText(priceText);
-    
-    // Feedback visual
+    // Animación visual mejorada al copiar
     const originalText = elements.btnCopy.textContent;
+    elements.btnCopy.textContent = 'Copiando...';
+    elements.btnCopy.classList.add('copying');
+    // Eliminar cualquier borde personalizado
+    elements.btnCopy.style.border = '';
+  // Obtener el texto del precio, quitando el símbolo y espacios
+  let priceText = elements.resultValue.textContent.replace(/[^\d.,]/g, '').trim();
+  // Si el separador decimal es coma, lo pasamos a punto
+  if (priceText.includes(',') && priceText.match(/,\d{1,2}$/)) {
+    priceText = priceText.replace('.', '').replace(',', '.');
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(priceText);
+    } else {
+      // Fallback para navegadores antiguos
+      const tempInput = document.createElement('input');
+      tempInput.value = priceText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+    }
+    // Feedback visual
+    elements.btnCopy.classList.remove('copying');
     elements.btnCopy.classList.add('success');
     elements.btnCopy.textContent = '¡Copiado!';
-
     setTimeout(() => {
       elements.btnCopy.classList.remove('success');
       elements.btnCopy.textContent = originalText;
-    }, 2000);
-
+    }, 1200);
   } catch (error) {
     console.error('Error al copiar:', error);
     showStatusMessage('No se pudo copiar al portapapeles', 'error');
