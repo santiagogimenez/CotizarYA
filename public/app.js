@@ -353,8 +353,9 @@ function toggleEducationTips() {
   const extraTips = document.querySelectorAll('.extra-tip');
   const btn = document.getElementById('btnToggleTips');
   const toggleText = btn.querySelector('.toggle-text');
+  const tipsGrid = document.querySelector('.tips-grid');
   const isExpanded = btn.classList.contains('expanded');
-  
+
   if (isExpanded) {
     // Colapsar
     extraTips.forEach(tip => {
@@ -362,6 +363,7 @@ function toggleEducationTips() {
     });
     btn.classList.remove('expanded');
     toggleText.textContent = 'Ver más consejos';
+    if (tipsGrid) tipsGrid.classList.add('collapsed');
   } else {
     // Expandir
     extraTips.forEach((tip, index) => {
@@ -370,6 +372,7 @@ function toggleEducationTips() {
     });
     btn.classList.add('expanded');
     toggleText.textContent = 'Ver menos consejos';
+    if (tipsGrid) tipsGrid.classList.remove('collapsed');
   }
 }
 
