@@ -710,20 +710,46 @@ function renderPlatforms(data) {
 
   let html = '';
   
+
   data.available.forEach((platform, index) => {
     const isBest = index === 0;
+    // Determinar clase de color para el icono
+    let iconClass = '';
+    let cleanName = platform.name;
+    let cleanIcon = platform.icon;
+    const name = platform.name.toLowerCase();
+    if (name.includes('binance')) iconClass = 'binance';
+    else if (name.includes('lemon')) iconClass = 'lemon';
+    else if (name.includes('ripio')) iconClass = 'ripio';
+    else if (name.includes("let'sbit")) iconClass = 'letsbit';
+    else if (name.includes('buenbit')) iconClass = 'buenbit';
+    else if (name.includes('satoshitango')) iconClass = 'satoshitango';
+
+    // Limpiar texto "Mejor precio" si viene en el nombre o icono
+    cleanName = cleanName.replace(/Mejor precio/gi, '').trim();
+    // Eliminar cualquier badge HTML o span con 'Mejor precio' en el icono
+    if (typeof cleanIcon === 'string') {
+      cleanIcon = cleanIcon
+        .replace(/Mejor precio/gi, '')
+        .replace(/<span[^>]*>\s*<svg[^>]*>.*?<\/svg>\s*Mejor precio\s*<\/span>/gis, '')
+        .replace(/<span[^>]*>\s*Mejor precio\s*<\/span>/gi, '')
+        .replace(/<div[^>]*>\s*Mejor precio\s*<\/div>/gi, '')
+        .replace(/<span[^>]*>\s*<svg[^>]*>.*?<\/svg>\s*<\/span>/gis, '');
+      cleanIcon = cleanIcon.trim();
+    }
+
     html += `
-      <div class="platform-item ${isBest ? 'best' : ''}">
+      <div class="platform-item${isBest ? ' best' : ''}">
         <div class="platform-info">
-          <div class="platform-icon">${platform.icon}</div>
+          <div class="platform-icon ${iconClass}">${cleanIcon}</div>
           <div class="platform-details">
-            <div class="platform-name">${platform.name}</div>
+            <div class="platform-name">${cleanName}</div>
             <div class="platform-type">Venta USDT</div>
           </div>
         </div>
         <div class="platform-price">
           <div class="platform-price-value">$ ${formatNumber(platform.ask, 2)}</div>
-          <div class="platform-price-label">por USDT</div>
+          <div class="platform-price-label">ARS/USDT</div>
         </div>
       </div>
     `;
@@ -731,10 +757,18 @@ function renderPlatforms(data) {
 
   if (data.unavailable && data.unavailable.length > 0) {
     data.unavailable.forEach(platform => {
+      let iconClass = '';
+      const name = platform.name.toLowerCase();
+      if (name.includes('binance')) iconClass = 'binance';
+      else if (name.includes('lemon')) iconClass = 'lemon';
+      else if (name.includes('ripio')) iconClass = 'ripio';
+      else if (name.includes("let'sbit")) iconClass = 'letsbit';
+      else if (name.includes('buenbit')) iconClass = 'buenbit';
+      else if (name.includes('satoshitango')) iconClass = 'satoshitango';
       html += `
         <div class="platform-item unavailable">
           <div class="platform-info">
-            <div class="platform-icon">${platform.icon}</div>
+            <div class="platform-icon ${iconClass}">${platform.icon}</div>
             <div class="platform-details">
               <div class="platform-name">${platform.name}</div>
               <div class="platform-type">No disponible</div>
