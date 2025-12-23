@@ -121,7 +121,7 @@ async function fetchRate(showLoading = true) {
   }
 
   try {
-    const response = await fetch('/api/rate');
+    const response = await fetch('/api/server/rate');
     
     if (!response.ok) {
       throw new Error('Error al obtener la cotización');
@@ -403,7 +403,7 @@ async function updateYieldDefaults() {
     document.getElementById('usdtVariation').value = usdtVariation.toFixed(1);
     
     // Obtener datos económicos de la API
-    const response = await fetch('/api/economic-data');
+    const response = await fetch('/api/server/economic-data');
     if (response.ok) {
       const data = await response.json();
       
@@ -671,7 +671,7 @@ async function fetchPlatforms(showLoading = true) {
   }
 
   try {
-    const response = await fetch('/api/platforms');
+    const response = await fetch('/api/server/platforms');
     
     if (!response.ok) {
       throw new Error('Error al obtener las cotizaciones');
