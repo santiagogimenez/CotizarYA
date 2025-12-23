@@ -716,7 +716,6 @@ function renderPlatforms(data) {
     // Determinar clase de color para el icono
     let iconClass = '';
     let cleanName = platform.name;
-    let cleanIcon = platform.icon;
     const name = platform.name.toLowerCase();
     if (name.includes('binance')) iconClass = 'binance';
     else if (name.includes('lemon')) iconClass = 'lemon';
@@ -725,23 +724,26 @@ function renderPlatforms(data) {
     else if (name.includes('buenbit')) iconClass = 'buenbit';
     else if (name.includes('satoshitango')) iconClass = 'satoshitango';
 
-    // Limpiar texto "Mejor precio" si viene en el nombre o icono
+    // Limpiar texto "Mejor precio" si viene en el nombre
     cleanName = cleanName.replace(/Mejor precio/gi, '').trim();
-    // Eliminar cualquier badge HTML o span con 'Mejor precio' en el icono
-    if (typeof cleanIcon === 'string') {
-      cleanIcon = cleanIcon
-        .replace(/Mejor precio/gi, '')
-        .replace(/<span[^>]*>\s*<svg[^>]*>.*?<\/svg>\s*Mejor precio\s*<\/span>/gis, '')
-        .replace(/<span[^>]*>\s*Mejor precio\s*<\/span>/gi, '')
-        .replace(/<div[^>]*>\s*Mejor precio\s*<\/div>/gi, '')
-        .replace(/<span[^>]*>\s*<svg[^>]*>.*?<\/svg>\s*<\/span>/gis, '');
-      cleanIcon = cleanIcon.trim();
-    }
+
+    // Inicial de la plataforma (primera letra significativa)
+    let initial = '';
+    if (name.includes('binance')) initial = 'B';
+    else if (name.includes('lemon')) initial = 'L';
+    else if (name.includes('ripio')) initial = 'R';
+    else if (name.includes("let'sbit")) initial = 'L';
+    else if (name.includes('buenbit')) initial = 'B';
+    else if (name.includes('satoshitango')) initial = 'S';
+    else initial = cleanName.charAt(0).toUpperCase();
+
+    // Renderizar círculo con inicial
+    const iconHtml = `<span class="platform-initial">${initial}</span>`;
 
     html += `
       <div class="platform-item${isBest ? ' best' : ''}">
         <div class="platform-info">
-          <div class="platform-icon ${iconClass}">${cleanIcon}</div>
+          <div class="platform-icon ${iconClass}">${iconHtml}</div>
           <div class="platform-details">
             <div class="platform-name">${cleanName}</div>
             <div class="platform-type">Venta USDT</div>

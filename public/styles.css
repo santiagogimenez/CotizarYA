@@ -960,26 +960,51 @@ main {
   width: 100%;
 }
 
+
 .platform-icon {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #222;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  background: #222;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
   margin-bottom: 0;
-  border: 2.5px solid #444;
+  flex-shrink: 0;
+  border: none;
+  position: relative;
+}
+.platform-initial {
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 /* Colores diferenciadores por plataforma */
-.platform-icon.binance { background: #f3ba2f; border-color: #e2b400; }
-.platform-icon.lemon { background: #ffe600; border-color: #ffe600; }
-.platform-icon.ripio { background: #0a3aff; border-color: #0a3aff; }
-.platform-icon.letsbit { background: #ff5c1a; border-color: #ff5c1a; }
-.platform-icon.buenbit { background: #00c853; border-color: #00c853; }
-.platform-icon.satoshitango { background: #7c3aed; border-color: #7c3aed; }
+.platform-icon.binance { background: #f3ba2f; }
+.platform-icon.lemon { background: #ffe600; }
+.platform-icon.ripio { background: #0a3aff; }
+.platform-icon.letsbit { background: #ff5c1a; }
+.platform-icon.buenbit { background: #00c853; }
+.platform-icon.satoshitango { background: #7c3aed; }
+
+@media (max-width: 700px) {
+  .platform-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .platform-initial {
+    font-size: 1.1rem;
+  }
+}
 
 .platform-details {
   display: flex;
