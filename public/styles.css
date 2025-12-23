@@ -2834,6 +2834,37 @@ footer {
     font-size: 0.75rem;
   }
 
+    /* Mejorar branding en móvil: más pequeño, discreto y abajo */
+    @media (max-width: 600px) {
+      .branding {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        margin-top: 10px;
+        margin-bottom: 0;
+        background: rgba(99, 102, 241, 0.10);
+        border-radius: 12px;
+        position: static;
+        box-shadow: none;
+      }
+      .branding-text {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+      .branding-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
   .theme-toggle {
     width: 32px;
     height: 32px;

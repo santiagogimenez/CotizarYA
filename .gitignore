@@ -30,6 +30,3 @@ build/
 
 # Cache
 .cache/
-
-# UI Icons - Pack completo (muy pesado)
-UI_iconos/
